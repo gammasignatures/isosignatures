@@ -9,44 +9,44 @@ struct SchemeMethods
     void (*mthd_keypair_free)(void *obj);
     int (*mthd_keypair_gen)(int sec, void *obj);
     const char *(*mthd_get_name)();
-    void *(*mthd_signsess_new)(void *keyobj, int bitlen_clr, int bitlen_rec, int bitlen_red);
+    void *(*mthd_signsess_new)(void *keyobj);
     void (*mthd_signsess_free)(void* obj);
-    void *(*mthd_vrfysess_new)(void *keyobj, int bitlen_clr, int bitlen_rec, int bitlen_red);
+    void *(*mthd_vrfysess_new)(void *keyobj);
     void (*mthd_vrfysess_free)(void* obj);
-    void *(*mthd_signature_new)(void *keyobj, int bitlen_clr, int bitlen_rec, int bitlen_red);
+    void *(*mthd_signature_new)(void *keyobj);
     void (*mthd_signature_free)(void* obj);
-    int (*mthd_get_sig_len)(int clr, int rec, int red, void *obj);
-    int (*mthd_sig_encode)(int clr, int rec, int red, void *obj, unsigned char *buf);
-    int (*mthd_sign_offline)(int clr, int rec, int red,
-        void *keyobj, void *sessobj, void *sigobj);
-    int (*mthd_sign_online)(int clr, int rec, int red,
-        void *keyobj, void *sessobj, void *sigobj,
-        const unsigned char *msg, int msglen);
-    int (*mthd_vrfy_offline)(int clr, int rec, int red,
-        void *keyobj, void *sessobj);
-    int (*mthd_vrfy_online)(int clr, int rec, int red,
-        void *keyobj, void *sessobj, void *sigobj);
+    int (*mthd_get_sig_len)(void *obj);
+    int (*mthd_sig_encode)(void *obj, unsigned char *buf);
+	int(*mthd_sign_offline)(void *keyobj, void *sessobj, void *sigobj);
+	int(*mthd_sign_online)(void *keyobj, void *sessobj, void *sigobj,
+			const unsigned char *msg, int msglen);
+	int(*mthd_vrfy_offline)(void *keyobj, void *sessobj, void *sigobj,
+			const unsigned char *msg, int msglen);
+	int(*mthd_vrfy_online)(void *keyobj, void *sessobj, void *sigobj);
+
 };
 
 
 /* All the scheme methods for Scheme_new() */
-extern SchemeMethods OmegaMethods;
-extern SchemeMethods AOMethods;
-extern SchemeMethods PVMethods;
-extern SchemeMethods ECOMG2_Methods;
-extern SchemeMethods ECOMG1_Methods;
-extern SchemeMethods ECOMG0_Methods;
-extern SchemeMethods ECAO_Methods;
-extern SchemeMethods ECPV1_Methods;
-extern SchemeMethods ECPV0_Methods;
+extern SchemeMethods ECDSAMethods;
 
 
 /* A structure to hold a scheme. */
 typedef struct Scheme Scheme;
+struct Scheme
+{
+	SchemeMethods*  imp;
+};
 
 
 /* A structure to hold key materials. */
 typedef struct KeyPair KeyPair;
+struct KeyPair
+{
+	Scheme* sch;
+	int     sec;
+	void*   obj;
+};
 
 
 /**
@@ -54,6 +54,11 @@ typedef struct KeyPair KeyPair;
  * It is opaque, since the processes differ from scheme to scheme.
  */
 typedef struct SignSession SignSession;
+struct SignSession
+{
+	Scheme* sch;
+	void*   obj;
+};
 
 
 /**
@@ -61,6 +66,11 @@ typedef struct SignSession SignSession;
  * It is opaque, since the processes differ from scheme to scheme.
  */
 typedef struct VrfySession VrfySession;
+struct VrfySession
+{
+	Scheme* sch;
+	void*   obj;
+};
 
 
 /**
@@ -68,6 +78,11 @@ typedef struct VrfySession VrfySession;
  * It is opaque since signature format differ from scheme to scheme.
  */
 typedef struct Signature Signature;
+struct Signature
+{
+	Scheme*	sch;
+	void*   obj;
+};
 
 
 /**
@@ -126,9 +141,6 @@ void KeyPair_free(KeyPair *keypair);
  *
  * \param keypair       A KeyPair object.
  * \param sch           A scheme object.
- * \param bitlen_clr    Length (in bit) of plain part of message.
- * \param bitlen_rec    Length (in bit) of recoverable part of message.
- * \param bitlen_red    Length (in bit) of additional redundancy.
  *
  * \return  A context object if OK, or NULL if error.
  *
@@ -138,8 +150,7 @@ void KeyPair_free(KeyPair *keypair);
  *
  * \note    Remember to free it by calling SignSession_free().
  */
-SignSession *SignSession_new(KeyPair *keypair, Scheme *sch,
-        int bitlen_clr, int bitlen_rec, int bitlen_red);
+SignSession *SignSession_new(KeyPair *keypair, Scheme *sch);
 
 
 /**
@@ -151,13 +162,10 @@ void SignSession_free(SignSession *sess);
 
 
 /**
- * Allocate for a context used to generate a signature.
+ * Allocate for a context used to verify a signature.
  *
  * \param keypair       A KeyPair object.
  * \param sch           A scheme object.
- * \param bitlen_clr    Length (in bit) of plain part of message.
- * \param bitlen_rec    Length (in bit) of recoverable part of message.
- * \param bitlen_red    Length (in bit) of additional redundancy.
  *
  * \return  A context object if OK, or NULL if error.
  *
@@ -167,8 +175,7 @@ void SignSession_free(SignSession *sess);
  *
  * \note    Remember to free it by calling SignSession_free().
  */
-VrfySession *VrfySession_new(KeyPair *keypair, Scheme *sch,
-        int bitlen_clr, int bitlen_rec, int bitlen_red);
+VrfySession *VrfySession_new(KeyPair *keypair, Scheme *sch);
 
 
 /**
@@ -184,14 +191,10 @@ void VrfySession_free(VrfySession *sess);
  *
  * \param keypair       A KeyPair object.
  * \param sch           A scheme object.
- * \param bitlen_clr    Length (in bit) of plain part of message.
- * \param bitlen_rec    Length (in bit) of recoverable part of message.
- * \param bitlen_red    Length (in bit) of additional redundancy.
  *
  * \return  A signature object if OK, or NULL if error.
  */
-Signature *Signature_new(KeyPair *keypair, Scheme *sch,
-        int bitlen_clr, int bitlen_rec, int bitlen_red);
+Signature *Signature_new(KeyPair *keypair, Scheme *sch);
 
 
 /**
@@ -272,10 +275,14 @@ int Scheme_sign_online(Scheme *sch, KeyPair *keypair,
  * \param sch       A scheme object.
  * \param keypair   A key-pair used to verify the signature.
  * \param sess      Context for this verifying session.
+ * \param sig		A signature object, possibly containing offline signature.
+ * \param msg		The message to be signed.
+ * \param msglen	Length of message in byte.
  *
  * \return  0(accept), or 1(reject), or <0(error).
  */
-int Scheme_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySession *sess);
+int Scheme_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySession *sess,
+		Signature *sig, const unsigned char *msg, int msglen);
 
 
 /**
@@ -288,7 +295,7 @@ int Scheme_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySession *sess);
  *
  * \return  0(accept), or 1(reject), or <0(error).
  */
-int Scheme_verify_online(Scheme *sch, KeyPair *keypair, VrfySession *sess,
+int Scheme_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySession *sess,
         Signature *sig);
 
 

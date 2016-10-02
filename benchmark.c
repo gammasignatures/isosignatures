@@ -23,9 +23,8 @@ unsigned long long getus(){
     return t;
 }
 int test_one_user(int breakpoint, int sign_count, Scheme* sch,
-//        KeyPair *keypair, SignSession *signsess, VrfySession *vrfysess, Signature *sig,
         int bitlen_sec,
-        int bitlen_clr, int bitlen_rec, int bitlen_red,
+        int bitlen_msg,
         clock_t *s_tot, clock_t *son_tot,
         clock_t *v_tot, clock_t *von_tot)
 {
@@ -41,18 +40,16 @@ int test_one_user(int breakpoint, int sign_count, Scheme* sch,
 
     int warming=1;
     for (++sign_count;sign_count>0;sign_count--){
-        SignSession *signsess = SignSession_new(keypair, sch,
-                bitlen_clr, bitlen_rec, bitlen_red);
+        SignSession *signsess = SignSession_new(keypair, sch);
         assert(signsess != NULL);
 
-        VrfySession *vrfysess = VrfySession_new(keypair, sch,
-                bitlen_clr, bitlen_rec, bitlen_red);
+        VrfySession *vrfysess = VrfySession_new(keypair, sch);
         assert(vrfysess != NULL);
 
-        Signature *sig = Signature_new(keypair, sch, bitlen_clr, bitlen_rec, bitlen_red);
+        Signature *sig = Signature_new(keypair, sch);
         assert(sig != NULL);
 
-        int msglen = bitlen_rec/8 + bitlen_clr/8;
+        int msglen = bitlen_msg/8;
         unsigned char *msg = malloc(msglen);
         assert(msg != NULL);
 
@@ -76,7 +73,7 @@ int test_one_user(int breakpoint, int sign_count, Scheme* sch,
 
         c4 = clock();
 //        timerstart();
-        ret = Scheme_vrfy_offline(sch, keypair, vrfysess);
+        ret = Scheme_vrfy_offline(sch, keypair, vrfysess, sig, msg, msglen);
 //        timerstop();voff=getus();
         c5 = clock();voff=c5-c4;
 
@@ -118,40 +115,15 @@ static Scheme * get_scheme_by_id(int schid)
     Scheme *sch = NULL;
     switch (schid)
     {
-//    case SCHID_AO:
-//        sch = Scheme_new(&AOMethods);
-//        break;
-    case SCHID_ECAO:
-        sch = Scheme_new(&ECAO_Methods);
-        break;
-//    case SCHID_PV:
-//        sch = Scheme_new(&PVMethods);
-//        break;
-    case SCHID_ECPV1:
-        sch = Scheme_new(&ECPV1_Methods);
-        break;
-    case SCHID_ECPV0:
-        sch = Scheme_new(&ECPV0_Methods);
-        break;
-//    case SCHID_OMG:
-//        sch = Scheme_new(&OmegaMethods);
-//        break;
-    case SCHID_ECOMG2:
-        sch = Scheme_new(&ECOMG2_Methods);
-        break;
-    case SCHID_ECOMG1:
-        sch = Scheme_new(&ECOMG1_Methods);
-        break;
-    case SCHID_ECOMG0:
-        sch = Scheme_new(&ECOMG0_Methods);
-        break;
+	default:
+		sch = Scheme_new(&ECDSAMethods);
     }
     return sch;
 }
 
 
 int test(int verbose, int breakpoint, int schid, int bitlen_sec,
-    int bitlen_rec, int bitlen_red, int bitlen_clr,
+    int bitlen_msg,
     int sign_count, int user_count,
     clock_t *ret_sign_tot, clock_t *ret_sign_onl,
     clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
@@ -160,23 +132,6 @@ int test(int verbose, int breakpoint, int schid, int bitlen_sec,
     if (sch == NULL) return -1;
 
     int ret;
-
-//    KeyPair *keypair = KeyPair_new(sch, bitlen_sec);
-//    assert(keypair != NULL);
-//
-//    ret = KeyPair_gen(keypair);
-//    assert(ret == 0);
-//
-//    SignSession *signsess = SignSession_new(keypair, sch,
-//            bitlen_clr, bitlen_rec, bitlen_red);
-//    assert(signsess != NULL);
-//
-//    VrfySession *vrfysess = VrfySession_new(keypair, sch,
-//            bitlen_clr, bitlen_rec, bitlen_red);
-//    assert(vrfysess != NULL);
-//
-//    Signature *sig = Signature_new(keypair, sch, bitlen_clr, bitlen_rec, bitlen_red);
-//    assert(sig != NULL);
 
     int i;
     clock_t sign_total = 0;
@@ -188,7 +143,7 @@ int test(int verbose, int breakpoint, int schid, int bitlen_sec,
     ret = test_one_user(breakpoint, sign_count, sch,
             //keypair, signsess, vrfysess, sig,
             bitlen_sec,
-            bitlen_clr, bitlen_rec, bitlen_red,
+            bitlen_msg,
             &sign_total, &sign_online_total,
             &vrfy_total, &vrfy_online_total);
 
@@ -203,9 +158,8 @@ int test(int verbose, int breakpoint, int schid, int bitlen_sec,
     for (i=1; i<=user_count; i++)
     {
         test_one_user(breakpoint, sign_count, sch,
-                //keypair, signsess, vrfysess, sig,
                 bitlen_sec,
-                bitlen_clr, bitlen_rec, bitlen_red,
+                bitlen_msg,
                 &sign_total, &sign_online_total,
                 &vrfy_total, &vrfy_online_total);
 

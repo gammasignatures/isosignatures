@@ -5,50 +5,6 @@
 #include "scheme.h"
 
 
-struct Scheme
-{
-    SchemeMethods*  imp;
-};
-
-
-struct KeyPair
-{
-    Scheme* sch;
-    int     sec;
-    void*   obj;
-};
-
-
-struct SignSession
-{
-    Scheme* sch;
-    int     bitlen_clr;
-    int     bitlen_rec;
-    int     bitlen_red;
-    void*   obj;
-};
-
-
-struct VrfySession
-{
-    Scheme* sch;
-    int     bitlen_clr;
-    int     bitlen_rec;
-    int     bitlen_red;
-    void*   obj;
-};
-
-
-struct Signature
-{
-    Scheme*     sch;
-    int     bitlen_clr;
-    int     bitlen_rec;
-    int     bitlen_red;
-    void*       obj;
-};
-
-
 Scheme *Scheme_new(SchemeMethods *methods)
 {
     if (methods == NULL) return NULL;
@@ -95,17 +51,13 @@ int KeyPair_gen(KeyPair *keypair)
 }
 
 
-SignSession *SignSession_new(KeyPair *keypair, Scheme *sch,
-        int bitlen_clr, int bitlen_rec, int bitlen_red)
+SignSession *SignSession_new(KeyPair *keypair, Scheme *sch)
 {
     if (keypair == NULL) return NULL;
     if (sch == NULL) return NULL;
     SignSession *ret = (SignSession*)malloc(sizeof(SignSession));
     ret->sch = sch;
-    ret->bitlen_clr = bitlen_clr;
-    ret->bitlen_rec = bitlen_rec;
-    ret->bitlen_red = bitlen_red;
-    void *obj = sch->imp->mthd_signsess_new(keypair->obj, bitlen_clr, bitlen_rec, bitlen_red);
+    void *obj = sch->imp->mthd_signsess_new(keypair->obj);
     if (obj == NULL) goto err;
     ret->obj = obj;
     return ret;
@@ -123,17 +75,13 @@ void SignSession_free(SignSession *sess)
 }
 
 
-VrfySession *VrfySession_new(KeyPair *keypair, Scheme *sch,
-        int bitlen_clr, int bitlen_rec, int bitlen_red)
+VrfySession *VrfySession_new(KeyPair *keypair, Scheme *sch)
 {
     if (sch == NULL) return NULL;
     VrfySession *ret = (VrfySession*)malloc(sizeof(VrfySession));
     ret->sch = sch;
-    ret->bitlen_clr = bitlen_clr;
-    ret->bitlen_rec = bitlen_rec;
-    ret->bitlen_red = bitlen_red;
     void *keyobj = keypair->obj;
-    void *obj = sch->imp->mthd_vrfysess_new(keyobj, bitlen_clr, bitlen_rec, bitlen_red);
+    void *obj = sch->imp->mthd_vrfysess_new(keyobj);
     if (obj == NULL) goto err;
     ret->obj = obj;
     return ret;
@@ -152,18 +100,13 @@ void VrfySession_free(VrfySession *sess)
 }
 
 
-Signature *Signature_new(KeyPair *keypair, Scheme *sch,
-        int bitlen_clr, int bitlen_rec, int bitlen_red)
+Signature *Signature_new(KeyPair *keypair, Scheme *sch)
 {
     if (sch == NULL) return NULL;
     Signature *ret = (Signature*)malloc(sizeof(Signature));
     ret->sch = sch;
-    ret->bitlen_clr = bitlen_clr;
-    ret->bitlen_rec = bitlen_rec;
-    ret->bitlen_red = bitlen_red;
     void *keyobj = keypair->obj;
-    void *obj = sch->imp->mthd_signature_new(keyobj,
-            bitlen_clr, bitlen_rec, bitlen_red);
+    void *obj = sch->imp->mthd_signature_new(keyobj);
     if (obj == NULL) goto err;
     ret->obj = obj;
     return ret;
@@ -184,11 +127,7 @@ void Signature_free(Signature *sig)
 int Signature_get_length(Signature *sig)
 {
     if (sig == NULL) return -1;
-    return sig->sch->imp->mthd_get_sig_len(
-            sig->bitlen_clr,
-            sig->bitlen_rec,
-            sig->bitlen_red,
-            sig->obj);
+    return sig->sch->imp->mthd_get_sig_len(sig->obj);
 }
 
 
@@ -196,12 +135,7 @@ int Signature_encode(Signature *sig, unsigned char *buf)
 {
     if (sig == NULL) return -1;
     if (buf == NULL) return -1;
-    return sig->sch->imp->mthd_sig_encode(
-            sig->bitlen_clr,
-            sig->bitlen_rec,
-            sig->bitlen_red,
-            sig->obj,
-            buf);
+    return sig->sch->imp->mthd_sig_encode(sig->obj, buf);
 }
 
 
@@ -225,11 +159,7 @@ int Scheme_sign_offline(Scheme *sch, KeyPair *keypair,
     if (keypair == NULL) return -1;
     if (sess == NULL) return -1;
     if (sig == NULL) return -1;
-    return sch->imp->mthd_sign_offline(
-            sess->bitlen_clr,
-            sess->bitlen_rec,
-            sess->bitlen_red,
-            keypair->obj, sess->obj, sig->obj);
+    return sch->imp->mthd_sign_offline(keypair->obj, sess->obj, sig->obj);
 }
 
 
@@ -243,24 +173,19 @@ int Scheme_sign_online(Scheme *sch, KeyPair *keypair,
     if (sig == NULL) return -1;
     if (msg == NULL) return -1;
     return sch->imp->mthd_sign_online(
-            sess->bitlen_clr,
-            sess->bitlen_rec,
-            sess->bitlen_red,
-            keypair->obj, sess->obj, sig->obj, msg, msglen);
+			keypair->obj, sess->obj,
+			sig->obj, msg, msglen);
 }
 
 
-int Scheme_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySession *sess)
+int Scheme_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySession *sess,
+	Signature *sig, const unsigned char *msg, int msglen)
 {
     if (sch == NULL) return -1;
     if (keypair == NULL) return -1;
     if (sess == NULL) return -1;
-    return sch->imp->mthd_vrfy_offline(
-            sess->bitlen_clr,
-            sess->bitlen_rec,
-            sess->bitlen_red,
-            keypair->obj,
-            sess->obj);
+    return sch->imp->mthd_vrfy_offline(keypair->obj, sess->obj,
+			sig->obj, msg, msglen);
 }
 
 
@@ -271,11 +196,5 @@ int Scheme_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySession *sess,
     if (keypair == NULL) return -1;
     if (sess == NULL) return -1;
     if (sig == NULL) return -1;
-    return sch->imp->mthd_vrfy_online(
-            sess->bitlen_clr,
-            sess->bitlen_rec,
-            sess->bitlen_red,
-            keypair->obj,
-            sess->obj,
-            sig->obj);
+    return sch->imp->mthd_vrfy_online(keypair->obj, sess->obj, sig->obj);
 }

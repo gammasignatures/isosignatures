@@ -168,7 +168,7 @@ int main(int argc, char **argv)
     clock_t v_tot = 0;
     clock_t von_tot = 0;
     test(verbose, phase,sch_id, bitlen_sec,
-            bitlen_rec, bitlen_red, bitlen_clr,
+            bitlen_sec,
             sigcount, usrcount,
             &s_tot, &son_tot, &v_tot, &von_tot);
 

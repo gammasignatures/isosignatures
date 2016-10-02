@@ -32,9 +32,7 @@
  * \param breakpoint    Where to stop in one run?
  * \param schid         Which scheme? Use SCHID_* here.
  * \param bitlen_sec    Security parameter. Use SEC_* here.
- * \param bitlen_rec    Length of recoverable part (in bit).
- * \param bitlen_red    Length of additional redundancy (in bit).
- * \param bitlen_clr    Length of plain part (in bit).
+ * \param bitlen_msg    Message length.
  * \param sign_count    How many signatures to generate for one signer.
  * \param user_count    How many signers.
  *
@@ -46,7 +44,7 @@
  * \return  0(OK), or -1(failed).
  */
 int test(int verbose, int breakpoint, int schid, int bitlen_sec,
-    int bitlen_rec, int bitlen_red, int bitlen_clr,
+    int bitlen_msg,
     int sign_count, int user_count,
     clock_t *ret_sign_tot, clock_t *ret_sign_onl,
     clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl);
