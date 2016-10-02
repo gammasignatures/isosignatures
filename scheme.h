@@ -28,7 +28,7 @@ struct SchemeMethods
 
 
 /* All the scheme methods for Scheme_new() */
-extern SchemeMethods ECDSAMethods;
+extern SchemeMethods ECDSA_Methods;
 
 
 /* A structure to hold a scheme. */

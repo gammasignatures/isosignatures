@@ -299,9 +299,9 @@ int ECDSA_sign_offline(void *keyobj, void *sessobj, void *sigobj)
 	/* Pick r */
 	ret = BN_rand_range(sess->r, keys->group_order);
 	assert(ret == 1);
-	
+        
 	/* Compute r^(-1) */
-	ret = BN_mod_inverse(sess->r_inv, sess->r, keys->group_order, bnctx);
+	BN_mod_inverse(sess->r_inv, sess->r, keys->group_order, bnctx);
 	
 	/* Compute A = rP */
 	ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
@@ -312,7 +312,8 @@ int ECDSA_sign_offline(void *keyobj, void *sessobj, void *sigobj)
 	assert(ret == 1);
 	
 	/* Compute dx */
-	ret = BN_mod_mul(sess->dx, sig->d, keys->sk, bnctx);
+	BN_mod_mul(sess->dx, sig->d, keys->sk, keys->group_order, bnctx);
+
 	return 0;
 }
 
@@ -335,7 +336,8 @@ int ECDSA_sign_online(void *keyobj, void *sessobj, void *sigobj,
 	/* Compute z=r^(-1) * (e+dx) */
 	ret = BN_mod_add(sess->edx, sess->e, sess->dx, keys->group_order, bnctx);
 	assert(ret == 1);
-	ret = BN_mod_sub(sig->z, sess->r_inv, sess->edx, keys->group_order, bnctx);
+	
+    ret = BN_mod_mul(sig->z, sess->r_inv, sess->edx, keys->group_order, bnctx);
 	assert(ret == 1);
 
 	return 0;
@@ -357,7 +359,7 @@ int ECDSA_vrfy_offline(void *keyobj, void *sessobj, void *sigobj, const unsigned
 
 	/* Compute A0 = eP+dX */
 	EC_POINT_mul(keys->group, sess->A0, sess->e, keys->PK, sig->d, bnctx);
-
+    
 	return 0;
 }
 
@@ -370,14 +372,14 @@ int ECDSA_vrfy_online(void *keyobj, void *sessobj, void *sigobj)
 	int ret;
 
 	/* Compute z^(-1) */
-	ret = BN_mod_inverse(sess->z_inv, sig->z, keys->group_order, bnctx);
+	BN_mod_inverse(sess->z_inv, sig->z, keys->group_order, bnctx);
 
 	/* Compute A = z^(-1) * A0   */
-	ret = EC_POINT_mul(keys->group, sess->A0, sess->z_inv, NULL, NULL, bnctx);
-
+	ret = EC_POINT_mul(keys->group, sess->A, NULL, sess->A0, sess->z_inv, bnctx);
+        
 	/* Let d0 = A0.x */
-	ret = EC_POINT_get_affine_coordinates_GFp(keys->group, sess->A0, sess->d0, NULL, bnctx);
-
+	ret = EC_POINT_get_affine_coordinates_GFp(keys->group, sess->A, sess->d0, NULL, bnctx);
+        
 	/* Check d=d0? */
 	ret = BN_cmp(sig->d, sess->d0);
 	if (ret != 0) return -1;
@@ -403,7 +405,7 @@ SchemeMethods ECDSA_Methods =
 	.mthd_sign_offline = ECDSA_sign_offline,
 	.mthd_sign_online = ECDSA_sign_online,
 	.mthd_vrfy_offline = ECDSA_vrfy_offline,
-	.mthd_vrfy_online = ECDSA_vrfy_online
+	.mthd_vrfy_online = ECDSA_vrfy_online,
 };
 
 

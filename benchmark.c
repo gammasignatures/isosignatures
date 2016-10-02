@@ -116,7 +116,7 @@ static Scheme * get_scheme_by_id(int schid)
     switch (schid)
     {
 	default:
-		sch = Scheme_new(&ECDSAMethods);
+		sch = Scheme_new(&ECDSA_Methods);
     }
     return sch;
 }

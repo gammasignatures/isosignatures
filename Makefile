@@ -1,5 +1,5 @@
-run: run.o scheme.o benchmark.o Omega.o AO.o PV.o util.o ec-omega-full.o ec-omega-xor.o ec-omega-plain.o ec-pv-full.o ec-pv-xor.o ec-ao.o
-	gcc -g -o $@ $^ -lcrypto
+run: run.o scheme.o benchmark.o util.o ec-dsa.o
+	gcc -g -o $@ $^ -lcrypto -lc
 
 %.o: %.c
 	gcc -g -c $^
