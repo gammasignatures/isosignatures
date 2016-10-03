@@ -22,7 +22,9 @@ unsigned long long getus(){
     unsigned long long t = 1000000 * (tm2.tv_sec - tm1.tv_sec) + (tm2.tv_usec - tm1.tv_usec);
     return t;
 }
-int test_one_user(int breakpoint, int sign_count, Scheme* sch,
+
+
+int testDeploy3OneUser(int sign_count, Scheme* sch,
         int bitlen_sec,
         int bitlen_msg,
         clock_t *s_tot, clock_t *son_tot,
@@ -40,10 +42,10 @@ int test_one_user(int breakpoint, int sign_count, Scheme* sch,
 
     int warming=1;
     for (++sign_count;sign_count>0;sign_count--){
-        SignSession *signsess = SignSession_new(keypair, sch);
+        SignSessionD3 *signsess = SignSessionD3_new(keypair, sch);
         assert(signsess != NULL);
 
-        VrfySession *vrfysess = VrfySession_new(keypair, sch);
+        VrfySessionD3 *vrfysess = VrfySessionD3_new(keypair, sch);
         assert(vrfysess != NULL);
 
         Signature *sig = Signature_new(keypair, sch);
@@ -55,34 +57,31 @@ int test_one_user(int breakpoint, int sign_count, Scheme* sch,
 
         c0 = clock();
 //        timerstart();
-        ret = Scheme_sign_offline(sch, keypair, signsess, sig);
+        ret = Scheme_D3_sign_offline(sch, keypair, signsess, sig);
 //        timerstop();soff=getus();
         c1 = clock();soff=c1-c0;;
 
         assert(ret >= 0);
-        if (breakpoint==1) goto end;
 
         c2 = clock();
 //        timerstart();
-        ret = Scheme_sign_online(sch, keypair, signsess, sig, msg, msglen);
+        ret = Scheme_D3_sign_online(sch, keypair, signsess, sig, msg, msglen);
 //        timerstop();son=getus();
         c3 = clock();son=c3-c2;
 
         assert(ret >= 0);
-        if (breakpoint==2) goto end;
 
         c4 = clock();
 //        timerstart();
-        ret = Scheme_vrfy_offline(sch, keypair, vrfysess, sig, msg, msglen);
+        ret = Scheme_D3_vrfy_offline(sch, keypair, vrfysess, sig, msg, msglen);
 //        timerstop();voff=getus();
         c5 = clock();voff=c5-c4;
 
         if (ret < 0) return -1;//assert(ret >= 0);
-        if (breakpoint==3) goto end;
 
         c6 = clock();
 //        timerstart();
-        ret = Scheme_vrfy_online(sch, keypair, vrfysess, sig);
+        ret = Scheme_D3_vrfy_online(sch, keypair, vrfysess, sig);
 //        timerstop();von=getus();
         c7 = clock();von=c7-c6;
 
@@ -100,8 +99,8 @@ int test_one_user(int breakpoint, int sign_count, Scheme* sch,
             if (v_tot) *v_tot += von+voff;
         }
 
-        SignSession_free(signsess);
-        VrfySession_free(vrfysess);
+        SignSessionD3_free(signsess);
+        VrfySessionD3_free(vrfysess);
         Signature_free(sig);
         free(msg);
     }
@@ -110,11 +109,13 @@ int test_one_user(int breakpoint, int sign_count, Scheme* sch,
     return 0;
 }
 
+
 static Scheme * get_scheme_by_id(int schid)
 {
     Scheme *sch = NULL;
     switch (schid)
     {
+	case SCHID_EC_DSA:
 	default:
 		sch = Scheme_new(&ECDSA_Methods);
     }
@@ -122,11 +123,11 @@ static Scheme * get_scheme_by_id(int schid)
 }
 
 
-int test(int verbose, int breakpoint, int schid, int bitlen_sec,
-    int bitlen_msg,
-    int sign_count, int user_count,
-    clock_t *ret_sign_tot, clock_t *ret_sign_onl,
-    clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
+int testDeploy3(int verbose, int schid, int bitlen_sec,
+		int bitlen_msg,
+		int sign_count, int user_count,
+		clock_t *ret_sign_tot, clock_t *ret_sign_onl,
+		clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
 {
     Scheme *sch = get_scheme_by_id(schid);
     if (sch == NULL) return -1;
@@ -140,8 +141,7 @@ int test(int verbose, int breakpoint, int schid, int bitlen_sec,
     clock_t vrfy_online_total = 0;
 
     /* Warm up */
-    ret = test_one_user(breakpoint, sign_count, sch,
-            //keypair, signsess, vrfysess, sig,
+    ret = testDeploy3OneUser(sign_count, sch,
             bitlen_sec,
             bitlen_msg,
             &sign_total, &sign_online_total,
@@ -157,17 +157,11 @@ int test(int verbose, int breakpoint, int schid, int bitlen_sec,
     int VB=8;
     for (i=1; i<=user_count; i++)
     {
-        test_one_user(breakpoint, sign_count, sch,
+        testDeploy3OneUser(sign_count, sch,
                 bitlen_sec,
                 bitlen_msg,
                 &sign_total, &sign_online_total,
                 &vrfy_total, &vrfy_online_total);
-
-//        if (verbose==2&&i==VB) {
-//            printf("%d ",i);
-//            fflush(stdout);
-//            VB*=2;
-//        }
     }
 
     *ret_sign_tot = sign_total;
@@ -175,10 +169,6 @@ int test(int verbose, int breakpoint, int schid, int bitlen_sec,
     *ret_vrfy_tot = vrfy_total;
     *ret_vrfy_onl = vrfy_online_total;
 
-//    KeyPair_free(keypair);
-//    SignSession_free(signsess);
-//    VrfySession_free(vrfysess);
-//    Signature_free(sig);
     free(sch);
     return 0;
 }
@@ -190,4 +180,33 @@ const char* getnamebyschid(int schid)
     const char* ret=Scheme_get_name(sch);
     Scheme_free(sch);
     return ret;
+}
+
+
+int testDeploy2(int verbose, int schid, int bitlen_sec,
+		int bitlen_msg,
+		int sign_count, int user_count,
+		clock_t *ret_sign_tot, clock_t *ret_sign_onl,
+		clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
+{
+	return 0;
+}
+
+
+int testDeploy1(int verbose, int schid, int bitlen_sec,
+	int bitlen_msg,
+	int sign_count, int user_count,
+	clock_t *ret_sign_tot, clock_t *ret_sign_onl,
+	clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
+{
+	return 0;
+}
+
+
+int testDeploy0(int verbose, int schid, int bitlen_sec,
+	int bitlen_msg,
+	int sign_count, int user_count,
+	clock_t *ret_sign, clock_t *ret_vrfy)
+{
+	return 0;
 }
