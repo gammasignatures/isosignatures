@@ -397,6 +397,7 @@ void *ECCDSA2_d3_signsess_new(void *keyobj)
 
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
+	flag = sess->d = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
 	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
@@ -414,6 +415,7 @@ void ECCDSA2_d3_signsess_free(void* obj)
 	if (obj == NULL) return;
 	ECCDSA2_SignSessD3 *sess = (ECCDSA2_SignSessD3*)obj;
 	BN_free(sess->r);
+	BN_free(sess->d);
 	EC_POINT_free(sess->A);
 	free(sess->e_bytes);
 	free(sess->ed_bytes);
@@ -611,6 +613,7 @@ void *ECCDSA2_d2_signsess_new(void *keyobj)
 
     void *flag = NULL;
     flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->d = BN_new();if (flag == NULL) goto err;
     flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
     flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
     flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
@@ -628,6 +631,7 @@ void ECCDSA2_d2_signsess_free(void* obj)
     if (obj == NULL) return;
     ECCDSA2_SignSessD2 *sess = (ECCDSA2_SignSessD2*)obj;
     BN_free(sess->r);
+    BN_free(sess->d);
     EC_POINT_free(sess->A);
     free(sess->e_bytes);
     free(sess->ed_bytes);
@@ -819,6 +823,7 @@ void *ECCDSA2_d1_signsess_new(void *keyobj)
 
     void *flag = NULL;
     flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->d = BN_new();if (flag == NULL) goto err;
     flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
     flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
     flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
@@ -836,6 +841,7 @@ void ECCDSA2_d1_signsess_free(void* obj)
     if (obj == NULL) return;
     ECCDSA2_SignSessD1 *sess = (ECCDSA2_SignSessD1*)obj;
     BN_free(sess->r);
+    BN_free(sess->d);
     EC_POINT_free(sess->A);
     free(sess->e_bytes);
     free(sess->ed_bytes);
@@ -1020,6 +1026,7 @@ void *ECCDSA2_d0_signsess_new(void *keyobj)
 
     void *flag = NULL;
     flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->d = BN_new();if (flag == NULL) goto err;
     flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
     flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
     flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
@@ -1037,6 +1044,7 @@ void ECCDSA2_d0_signsess_free(void* obj)
     if (obj == NULL) return;
     ECCDSA2_SignSessD0 *sess = (ECCDSA2_SignSessD0*)obj;
     BN_free(sess->r);
+    BN_free(sess->d);
     EC_POINT_free(sess->A);
     free(sess->e_bytes);
     free(sess->ed_bytes);
