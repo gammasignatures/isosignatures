@@ -22,7 +22,7 @@ void print_usage(){
 "   scheme      Specifies the scheme to be tested.\n"
 "               scheme should be one of the following:\n"
 "               ecdsa. \n\n"
-"   -deploy d   Which deployment to use?"
+"   -deploy d   Which deployment to use?\n"
 "				Value d should be 0/1/2/3. (Default:3) \n\n"
 "   -sec n      Security parameter.\n"
 "               n should be 160/192/224/256/384/521.(Default: 256).\n\n"
