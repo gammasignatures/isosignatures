@@ -1,4 +1,4 @@
-#include <time.h>
+
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
@@ -606,6 +606,7 @@ void *ECDSA_d2_vrfysess_new(void *keyobj)
 	flag = sess->e = BN_new();if (flag == NULL) goto err;
 	flag = sess->z_inv = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+	flag = sess->dX = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
 	flag = sess->d0 = BN_new();if (flag == NULL) goto err;
 	flag = sess->z_inv_e = BN_new();if (flag == NULL) goto err;
 	return sess;
@@ -623,6 +624,7 @@ void ECDSA_d2_vrfysess_free(void* obj)
 	BN_free(sess->e);
 	BN_free(sess->z_inv);
 	EC_POINT_free(sess->A);
+	EC_POINT_free(sess->dX);
 	BN_free(sess->d0);
 	BN_free(sess->z_inv_e);
 	free(sess);
@@ -662,7 +664,7 @@ int ECDSA_d2_sign_offline(void *keyobj, void *sessobj, void *sigobj)
 int ECDSA_d2_sign_online(void *keyobj, void *sessobj, void *sigobj,
 	const unsigned char *msg, int msglen)
 {
-	/* Cast objects. */
+	
 	ECDSA_KeyPair *keys = (ECDSA_KeyPair*)keyobj;
 	ECDSA_SignSessD2 *sess = (ECDSA_SignSessD2*)sessobj;
 	ECDSA_Sig *sig = (ECDSA_Sig*)sigobj;
@@ -717,7 +719,7 @@ int ECDSA_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsign
 	BN_mod_inverse(sess->z_inv, sig->z, keys->group_order, bnctx);
 
 	/* Compute z^(-1)e */
-	BN_mod_mul(sess->z_inv_e, sig->z, sess->e, keys->group_order, bnctx);
+	BN_mod_mul(sess->z_inv_e, sess->z_inv, sess->e, keys->group_order, bnctx);
 
 	/* Compute A = z^(-1)e * P + z^(-1)(dX)  */
 	ret = EC_POINT_mul(keys->group, sess->A, sess->z_inv_e, sess->dX, sess->z_inv, bnctx);
@@ -898,10 +900,10 @@ int ECDSA_d1_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsign
 	BN_mod_inverse(sess->z_inv, sig->z, keys->group_order, bnctx);
 
 	/* Compute z^(-1)e */
-	BN_mod_mul(sess->z_inv_e, sig->z, sess->e, keys->group_order, bnctx);
+	BN_mod_mul(sess->z_inv_e, sess->z_inv, sess->e, keys->group_order, bnctx);
 
 	/* Compute z^(-1)d */
-	BN_mod_mul(sess->z_inv_d, sig->z, sig->d, keys->group_order, bnctx);
+	BN_mod_mul(sess->z_inv_d, sess->z_inv, sig->d, keys->group_order, bnctx);
 
 	/* Compute A = z^(-1)e * P + z^(-1)d X  */
 	ret = EC_POINT_mul(keys->group, sess->A, sess->z_inv_e, keys->PK, sess->z_inv_d, bnctx);
@@ -1076,10 +1078,10 @@ int ECDSA_d0_vrfy(void *keyobj, void *sessobj, void *sigobj, const unsigned char
 	BN_mod_inverse(sess->z_inv, sig->z, keys->group_order, bnctx);
 
 	/* Compute z^(-1)e */
-	BN_mod_mul(sess->z_inv_e, sig->z, sess->e, keys->group_order, bnctx);
+	BN_mod_mul(sess->z_inv_e, sess->z_inv, sess->e, keys->group_order, bnctx);
 
 	/* Compute z^(-1)d */
-	BN_mod_mul(sess->z_inv_d, sig->z, sig->d, keys->group_order, bnctx);
+	BN_mod_mul(sess->z_inv_d, sess->z_inv, sig->d, keys->group_order, bnctx);
 
 	/* Compute A = z^(-1)e * P + z^(-1)d X  */
 	ret = EC_POINT_mul(keys->group, sess->A, sess->z_inv_e, keys->PK, sess->z_inv_d, bnctx);

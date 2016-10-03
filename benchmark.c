@@ -196,7 +196,7 @@ int testDeploy2OneUser(int sign_count, Scheme* sch,
 }
 
 
-int testDeploy2OneUser(int sign_count, Scheme* sch,
+int testDeploy1OneUser(int sign_count, Scheme* sch,
 	int bitlen_sec,
 	int bitlen_msg,
 	clock_t *s_tot, clock_t *son_tot,
