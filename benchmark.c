@@ -355,6 +355,8 @@ static Scheme * get_scheme_by_id(int schid)
     Scheme *sch = NULL;
     switch (schid)
     {
+	case SCHID_EC_KCDSA:
+		sch = Scheme_new(&ECKCDSA_Methods);
 	case SCHID_EC_DSA:
 	default:
 		sch = Scheme_new(&ECDSA_Methods);

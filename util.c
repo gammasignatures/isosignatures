@@ -120,15 +120,28 @@ int BN2LenBin(BIGNUM *bn, unsigned char *buf, int len)
 
 int BinXor(const unsigned char *s0, const unsigned char *s1, unsigned char *d, int len)
 {
-    assert(len>=0);
-    assert(s0!=NULL);
-    assert(s1!=NULL);
-    assert(d!=NULL);
-    int i;
-    for (i=0;i<len;++i){
-        d[i]=s0[i]^s1[i];
-    }
-    return 0;
+	assert(len >= 0);
+	assert(s0 != NULL);
+	assert(s1 != NULL);
+	assert(d != NULL);
+	int i;
+	for (i = 0;i<len;++i) {
+		d[i] = s0[i] ^ s1[i];
+	}
+	return 0;
+}
+
+
+int BinEq(const unsigned char *s0, const unsigned char *s1, int len)
+{
+	assert(len >= 0);
+	assert(s0 != NULL);
+	assert(s1 != NULL);
+	int i;
+	for (i = 0;i<len;++i) {
+		if (s0[i] != s1[i]) return -1;
+	}
+	return 0;
 }
 
 

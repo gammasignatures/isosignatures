@@ -99,9 +99,11 @@ int main(int argc, char **argv)
         }
         else
         {
-            if (strcmp(argv[i], "ecdsa") == 0)
-                sch_id = SCHID_EC_DSA;
-            else
+			if (strcmp(argv[i], "ecdsa") == 0)
+				sch_id = SCHID_EC_DSA;
+			else if (strcmp(argv[i], "eckcdsa") == 0)
+				sch_id = SCHID_EC_KCDSA;
+			else
                 show_usage_and_exit_if(1);
         }
     }
