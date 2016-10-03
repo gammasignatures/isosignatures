@@ -28,8 +28,8 @@ struct ECKCDSA_KeyPair
 typedef struct ECKCDSA_Sig ECKCDSA_Sig;
 struct ECKCDSA_Sig
 {
-	BIGNUM*	d_bytes;
-	BIGNUM*	z;
+	unsigned char*	d_bytes;
+	BIGNUM*	        z;
 };
 
 
@@ -37,7 +37,6 @@ typedef struct ECKCDSA_SignSessD3 ECKCDSA_SignSessD3;
 struct ECKCDSA_SignSessD3
 {
 	BIGNUM*         r;
-	BIGNUM*			r_inv;
 	EC_POINT*       A;
 	unsigned char*  A_bytes;
 	unsigned char*  e_bytes;
@@ -65,7 +64,6 @@ typedef struct ECKCDSA_SignSessD2 ECKCDSA_SignSessD2;
 struct ECKCDSA_SignSessD2
 {
 	BIGNUM*         r;
-	BIGNUM*			r_inv;
 	EC_POINT*       A;
 	unsigned char*  A_bytes;
 	unsigned char*  e_bytes;
@@ -91,7 +89,6 @@ typedef struct ECKCDSA_SignSessD1 ECKCDSA_SignSessD1;
 struct ECKCDSA_SignSessD1
 {
 	BIGNUM*         r;
-	BIGNUM*			r_inv;
 	EC_POINT*       A;
 	unsigned char*  A_bytes;
 	unsigned char*  e_bytes;
@@ -117,7 +114,6 @@ typedef struct ECKCDSA_SignSessD0 ECKCDSA_SignSessD0;
 struct ECKCDSA_SignSessD0
 {
 	BIGNUM*         r;
-	BIGNUM*			r_inv;
 	EC_POINT*       A;
 	unsigned char*  A_bytes;
 	unsigned char*  e_bytes;
@@ -311,13 +307,15 @@ int ECKCDSA_keypair_gen(int sec, void *obj)
 	keypair->group = grp;
 	EC_GROUP_get_order(grp, keypair->group_order, bnctx);
 	keypair->sk = EC_KEY_get0_private_key(keypair->eckey);
+    BN_mod_inverse((BIGNUM*)keypair->sk, keypair->sk, keypair->group_order,
+            bnctx);
 	keypair->PK = EC_KEY_get0_public_key(keypair->eckey);
 	keypair->bytelen_go = BN_num_bytes(keypair->group_order);
 	keypair->bytelen_point = EC_POINT_point2oct(
 		grp, keypair->PK, POINT_CONVERSION_COMPRESSED, NULL, 0, bnctx);
 	ret = 0;
 
-	final:
+final:
 	return ret;
 }
 
@@ -389,7 +387,6 @@ void *ECKCDSA_d3_signsess_new(void *keyobj)
 
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
-	flag = sess->r_inv = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
 	flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
 	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
@@ -408,7 +405,6 @@ void ECKCDSA_d3_signsess_free(void* obj)
 	if (obj == NULL) return;
 	ECKCDSA_SignSessD3 *sess = (ECKCDSA_SignSessD3*)obj;
 	BN_free(sess->r);
-	BN_free(sess->r_inv);
 	EC_POINT_free(sess->A);
 	free(sess->A_bytes);
 	free(sess->e_bytes);
@@ -469,9 +465,6 @@ int ECKCDSA_d3_sign_offline(void *keyobj, void *sessobj, void *sigobj)
 	/* Pick r */
 	ret = BN_rand_range(sess->r, keys->group_order);
 	assert(ret == 1);
-
-	/* Compute r^(-1) */
-	BN_mod_inverse(sess->r_inv, sess->r, keys->group_order, bnctx);
 
 	/* Compute A = rP */
 	ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
@@ -620,7 +613,6 @@ void *ECKCDSA_d2_signsess_new(void *keyobj)
 
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
-	flag = sess->r_inv = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
 	flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
 	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
@@ -639,7 +631,6 @@ void ECKCDSA_d2_signsess_free(void* obj)
 	if (obj == NULL) return;
 	ECKCDSA_SignSessD2 *sess = (ECKCDSA_SignSessD2*)obj;
 	BN_free(sess->r);
-	BN_free(sess->r_inv);
 	EC_POINT_free(sess->A);
 	free(sess->A_bytes);
 	free(sess->e_bytes);
@@ -696,9 +687,6 @@ int ECKCDSA_d2_sign_offline(void *keyobj, void *sessobj, void *sigobj)
 	/* Pick r */
 	ret = BN_rand_range(sess->r, keys->group_order);
 	assert(ret == 1);
-
-	/* Compute r^(-1) */
-	BN_mod_inverse(sess->r_inv, sess->r, keys->group_order, bnctx);
 
 	/* Compute A = rP */
 	ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
@@ -828,7 +816,6 @@ void *ECKCDSA_d1_signsess_new(void *keyobj)
 
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
-	flag = sess->r_inv = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
 	flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
 	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
@@ -847,7 +834,6 @@ void ECKCDSA_d1_signsess_free(void* obj)
 	if (obj == NULL) return;
 	ECKCDSA_SignSessD1 *sess = (ECKCDSA_SignSessD1*)obj;
 	BN_free(sess->r);
-	BN_free(sess->r_inv);
 	EC_POINT_free(sess->A);
 	free(sess->A_bytes);
 	free(sess->e_bytes);
@@ -904,9 +890,6 @@ int ECKCDSA_d1_sign_offline(void *keyobj, void *sessobj, void *sigobj)
 	/* Pick r */
 	ret = BN_rand_range(sess->r, keys->group_order);
 	assert(ret == 1);
-
-	/* Compute r^(-1) */
-	BN_mod_inverse(sess->r_inv, sess->r, keys->group_order, bnctx);
 
 	/* Compute A = rP */
 	ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
@@ -1066,7 +1049,6 @@ void *ECKCDSA_d0_signsess_new(void *keyobj)
 
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
-	flag = sess->r_inv = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
 	flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
 	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
@@ -1085,7 +1067,6 @@ void ECKCDSA_d0_signsess_free(void* obj)
 	if (obj == NULL) return;
 	ECKCDSA_SignSessD0 *sess = (ECKCDSA_SignSessD0*)obj;
 	BN_free(sess->r);
-	BN_free(sess->r_inv);
 	EC_POINT_free(sess->A);
 	free(sess->A_bytes);
 	free(sess->e_bytes);
@@ -1143,9 +1124,6 @@ int ECKCDSA_d0_sign(void *keyobj, void *sessobj, void *sigobj,
 	/* Pick r */
 	ret = BN_rand_range(sess->r, keys->group_order);
 	assert(ret == 1);
-
-	/* Compute r^(-1) */
-	BN_mod_inverse(sess->r_inv, sess->r, keys->group_order, bnctx);
 
 	/* Compute A = rP */
 	ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);

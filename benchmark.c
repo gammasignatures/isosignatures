@@ -326,7 +326,7 @@ int testDeploy0OneUser(int sign_count, Scheme* sch,
 		//        timerstop();von=getus();
 		c7 = clock();von = c7 - c6;
 
-		if (ret < 0) return -1;//assert(ret >= 0);
+		assert(ret >= 0);
 
 	end:
 
@@ -357,6 +357,7 @@ static Scheme * get_scheme_by_id(int schid)
     {
 	case SCHID_EC_KCDSA:
 		sch = Scheme_new(&ECKCDSA_Methods);
+        break;
 	case SCHID_EC_DSA:
 	default:
 		sch = Scheme_new(&ECDSA_Methods);

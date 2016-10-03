@@ -21,7 +21,7 @@ void print_usage(){
 "ARGUMENTS\n"
 "   scheme      Specifies the scheme to be tested.\n"
 "               scheme should be one of the following:\n"
-"               ecdsa. \n\n"
+"               ecdsa/ec-kcdsa. \n\n"
 "   -deploy d   Which deployment to use?\n"
 "				Value d should be 0/1/2/3. (Default:3) \n\n"
 "   -sec n      Security parameter.\n"
