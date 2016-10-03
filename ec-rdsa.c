@@ -12,6 +12,52 @@
 
 
 
+
+void *ECRDSA_keypair_new(int sec);
+void ECRDSA_keypair_free(void *obj);
+int ECRDSA_keypair_gen(int sec, void *obj);
+const char *ECRDSA_get_name();
+void *ECRDSA_signature_new(void *keyobj);
+void ECRDSA_signature_free(void* obj);
+int ECRDSA_get_sig_len(void *obj);
+int ECRDSA_sig_encode(void *obj, unsigned char *buf);
+
+void *ECRDSA_d3_signsess_new(void *keyobj);
+void ECRDSA_d3_signsess_free(void* obj);
+void *ECRDSA_d3_vrfysess_new(void *keyobj);
+void ECRDSA_d3_vrfysess_free(void* obj);
+int ECRDSA_d3_sign_offline(void *keyobj, void *sessobj, void *sigobj);
+int ECRDSA_d3_sign_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
+int ECRDSA_d3_vrfy_offline(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
+int ECRDSA_d3_vrfy_online(void *keyobj, void *sessobj, void *sigobj);
+
+void *ECRDSA_d2_signsess_new(void *keyobj);
+void ECRDSA_d2_signsess_free(void* obj);
+void *ECRDSA_d2_vrfysess_new(void *keyobj);
+void ECRDSA_d2_vrfysess_free(void* obj);
+int ECRDSA_d2_sign_offline(void *keyobj, void *sessobj, void *sigobj);
+int ECRDSA_d2_sign_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
+int ECRDSA_d2_vrfy_offline(void *keyobj, void *sessobj, void *sigobj);
+int ECRDSA_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
+
+void *ECRDSA_d1_signsess_new(void *keyobj);
+void ECRDSA_d1_signsess_free(void* obj);
+void *ECRDSA_d1_vrfysess_new(void *keyobj);
+void ECRDSA_d1_vrfysess_free(void* obj);
+int ECRDSA_d1_sign_offline(void *keyobj, void *sessobj, void *sigobj);
+int ECRDSA_d1_sign_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
+int ECRDSA_d1_vrfy_offline(void *keyobj, void *sessobj);
+int ECRDSA_d1_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
+
+void *ECRDSA_d0_signsess_new(void *keyobj);
+void ECRDSA_d0_signsess_free(void* obj);
+void *ECRDSA_d0_vrfysess_new(void *keyobj);
+void ECRDSA_d0_vrfysess_free(void* obj);
+int ECRDSA_d0_sign(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
+int ECRDSA_d0_vrfy(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
+
+
+
 typedef struct ECRDSA_KeyPair ECRDSA_KeyPair;
 struct ECRDSA_KeyPair
 {
@@ -485,7 +531,7 @@ void *ECRDSA_d2_signsess_new(void *keyobj)
     flag = sess->re = BN_new();if (flag == NULL) goto err;
     return sess;
 err:
-    ECRDSA_D2_signsess_free(sess);
+    ECRDSA_d2_signsess_free(sess);
     return NULL;
 }
 
@@ -524,7 +570,7 @@ void *ECRDSA_d2_vrfysess_new(void *keyobj)
     flag = sess->d0 = BN_new();if (flag == NULL) goto err;
     return sess;
 err:
-    ECRDSA_D2_vrfysess_free(sess);
+    ECRDSA_d2_vrfysess_free(sess);
     return NULL;
 }
 
@@ -612,7 +658,8 @@ int ECRDSA_d2_vrfy_offline(void *keyobj, void *sessobj, void *sigobj)
 
     /* Compute dX */
     EC_POINT_mul(keys->group, sess->dX, NULL, keys->PK, sig->d, bnctx);
-
+    
+    BN_zero(sess->nil);
     return 0;
 }
 
@@ -633,12 +680,16 @@ int ECRDSA_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsig
 
     /* Compute e^(-1) */
     BN_mod_inverse(sess->e_inv, sess->e, keys->group_order, bnctx);
+    
+    /* Compute -e^(-1) */
+    BN_mod_sub(sess->neg_e_inv, sess->nil, sess->e_inv, keys->group_order,
+            bnctx);
 
     /* Compute e^(-1)z */
     BN_mod_mul(sess->e_inv_z, sess->e_inv, sig->z, keys->group_order, bnctx);
 
-    /* Compute A = e^(-1)z P + e^(-1) (dX) */
-    ret = EC_POINT_mul(keys->group, sess->A, sess->e_inv_z, sess->dX, sess->e_inv, bnctx);
+    /* Compute A = e^(-1)z P -e^(-1) (dX) */
+    ret = EC_POINT_mul(keys->group, sess->A, sess->e_inv_z, sess->dX, sess->neg_e_inv, bnctx);
 
     /* Let d0 = A.x */
     ret = EC_POINT_get_affine_coordinates_GFp(keys->group, sess->A, sess->d0, NULL, bnctx);
@@ -729,7 +780,7 @@ void *ECRDSA_d1_signsess_new(void *keyobj)
     flag = sess->re = BN_new();if (flag == NULL) goto err;
     return sess;
 err:
-    ECRDSA_D1_signsess_free(sess);
+    ECRDSA_d1_signsess_free(sess);
     return NULL;
 }
 
@@ -768,7 +819,7 @@ void *ECRDSA_d1_vrfysess_new(void *keyobj)
     flag = sess->d0 = BN_new();if (flag == NULL) goto err;
     return sess;
 err:
-    ECRDSA_D1_vrfysess_free(sess);
+    ECRDSA_d1_vrfysess_free(sess);
     return NULL;
 }
 
@@ -973,7 +1024,7 @@ void *ECRDSA_d0_signsess_new(void *keyobj)
     flag = sess->re = BN_new();if (flag == NULL) goto err;
     return sess;
 err:
-    ECRDSA_D0_signsess_free(sess);
+    ECRDSA_d0_signsess_free(sess);
     return NULL;
 }
 
@@ -1012,7 +1063,7 @@ void *ECRDSA_d0_vrfysess_new(void *keyobj)
     flag = sess->d0 = BN_new();if (flag == NULL) goto err;
     return sess;
 err:
-    ECRDSA_D0_vrfysess_free(sess);
+    ECRDSA_d0_vrfysess_free(sess);
     return NULL;
 }
 
