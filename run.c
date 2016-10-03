@@ -116,20 +116,21 @@ int main(int argc, char **argv)
 		clock_t son_tot = 0;
 		clock_t v_tot = 0;
 		clock_t von_tot = 0;
-		test_deploy_1(verbose, sch_id, bitlen_sec,
+		testDeploy1(verbose, sch_id, bitlen_sec,
 			bitlen_sec,
 			sigcount, usrcount,
 			&s_tot, &son_tot, &v_tot, &von_tot);
 
-		printf("\nResults for %d requests:\n"
-			//"Sign tot:        %d\n"
-			"Sign online tot: %d\n"
-			//"Vrfy tot:        %d\n"
-			"Vrfy online tot: %d\n",
+		printf("\ndeployment=%d, sessionCount=%d\n"
+			"Sign        : %d\n"
+			"Sign online : %d\n"
+			"Vrfy tot    : %d\n"
+			"Vrfy online : %d\n",
+            deploy,
 			sigcount*usrcount,
-			//(int)s_tot,
+			(int)s_tot,
 			(int)son_tot,
-			//(int)v_tot,
+			(int)v_tot,
 			(int)von_tot);
 	}
 		break;
@@ -139,18 +140,21 @@ int main(int argc, char **argv)
 		clock_t son_tot = 0;
 		clock_t v_tot = 0;
 		clock_t von_tot = 0;
-		test_deploy_2(verbose, sch_id, bitlen_sec,
+		testDeploy2(verbose, sch_id, bitlen_sec,
 			bitlen_sec,
 			sigcount, usrcount,
 			&s_tot, &son_tot, &v_tot, &von_tot);
 
-		printf("\nResults for %d requests:\n"
-			//"Sign tot:        %d\n"
-			"Sign online tot: %d\n"
-			//"Vrfy tot:        %d\n"
-			"Vrfy online tot: %d\n",
+		printf("\ndeployment=%d, sessionCount=%d\n"
+			"Sign        : %d\n"
+			"Sign online : %d\n"
+			"Vrfy tot    : %d\n"
+			"Vrfy online : %d\n",
+            deploy,
 			sigcount*usrcount,
+			(int)s_tot,
 			(int)son_tot,
+			(int)v_tot,
 			(int)von_tot);
 	}
 		break;
@@ -160,18 +164,21 @@ int main(int argc, char **argv)
 		clock_t son_tot = 0;
 		clock_t v_tot = 0;
 		clock_t von_tot = 0;
-		test_deploy_3(verbose, sch_id, bitlen_sec,
+		testDeploy3(verbose, sch_id, bitlen_sec,
 			bitlen_sec,
 			sigcount, usrcount,
 			&s_tot, &son_tot, &v_tot, &von_tot);
 
-		printf("\nResults for %d requests:\n"
-			//"Sign tot:        %d\n"
-			"Sign online tot: %d\n"
-			//"Vrfy tot:        %d\n"
-			"Vrfy online tot: %d\n",
+		printf("\ndeployment=%d, sessionCount=%d\n"
+			"Sign        : %d\n"
+			"Sign online : %d\n"
+			"Vrfy tot    : %d\n"
+			"Vrfy online : %d\n",
+            deploy,
 			sigcount*usrcount,
+			(int)s_tot,
 			(int)son_tot,
+			(int)v_tot,
 			(int)von_tot);
 	}
 		break;
@@ -179,14 +186,15 @@ int main(int argc, char **argv)
 	{
 		clock_t s_tot = 0;
 		clock_t v_tot = 0;
-		test_deploy_0(verbose, sch_id, bitlen_sec,
+		testDeploy0(verbose, sch_id, bitlen_sec,
 			bitlen_sec,
 			sigcount, usrcount,
 			&s_tot, &v_tot);
 
-		printf("\nResults for %d requests:\n"
-			"Sign tot:        %d\n"
-			"Vrfy tot:        %d\n",
+		printf("\ndeployment=%d, sessionCount=%d\n"
+			"Sign        : %d\n"
+			"Vrfy        : %d\n",
+            0,
 			sigcount*usrcount,
 			(int)s_tot,
 			(int)v_tot);

@@ -874,13 +874,8 @@ int ECDSA_d1_sign_online(void *keyobj, void *sessobj, void *sigobj,
 }
 
 
-int ECDSA_d1_vrfy_offline(void *keyobj, void *sessobj, void *sigobj)
+int ECDSA_d1_vrfy_offline(void *keyobj, void *sessobj)
 {
-	ECDSA_KeyPair *keys = (ECDSA_KeyPair*)keyobj;
-	ECDSA_VrfySessD1 *sess = (ECDSA_VrfySessD1*)sessobj;
-	ECDSA_Sig *sig = (ECDSA_Sig*)sigobj;
-	int ret;
-
 	return 0;
 }
 
