@@ -635,7 +635,7 @@ int ECRDSA_d3b_vrfy_online(void *keyobj, void *sessobj, void *sigobj)
     BN_mod_mul(sess->z_e_inv, sess->e_inv, sig->z, keys->group_order, bnctx);
 
     /* Compute A = ze^(-1) * P - de^(-1) * X */
-    ret = EC_POINT_mul(keys->group, sess->A, sess->z_e_inv, keys->PK, sess->d_e_inv, bnctx);
+    ret = EC_POINT_mul(keys->group, sess->A, sess->z_e_inv, keys->PK, sess->neg_d_e_inv, bnctx);
 
     /* Let d0 = A.x */
     ret = EC_POINT_get_affine_coordinates_GFp(keys->group, sess->A, sess->d0, NULL, bnctx);
