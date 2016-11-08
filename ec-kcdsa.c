@@ -33,215 +33,22 @@ struct ECKCDSA_Sig
 };
 
 
-typedef struct ECKCDSA_SignSessD3 ECKCDSA_SignSessD3;
-struct ECKCDSA_SignSessD3
+
+
+
+
+
+
+
+
+
+void ECKCDSA_keypair_free(void *obj)
 {
-	BIGNUM*         r;
-	EC_POINT*       A;
-	unsigned char*  A_bytes;
-	unsigned char*  e_bytes;
-	unsigned char*  ed_bytes;
-	BIGNUM*         ed;
-	BIGNUM*			red;
-};
-
-
-typedef struct ECKCDSA_VrfySessD3 ECKCDSA_VrfySessD3;
-struct ECKCDSA_VrfySessD3
-{
-	unsigned char*  e_bytes;
-	unsigned char*  ed_bytes;
-	BIGNUM*         ed;
-	EC_POINT*       edP;
-	EC_POINT*       zX;
-	EC_POINT*       A;
-	unsigned char*  A_bytes;
-	unsigned char*  d0_bytes;
-};
-
-
-typedef struct ECKCDSA_SignSessD2 ECKCDSA_SignSessD2;
-struct ECKCDSA_SignSessD2
-{
-	BIGNUM*         r;
-	EC_POINT*       A;
-	unsigned char*  A_bytes;
-	unsigned char*  e_bytes;
-	unsigned char*  ed_bytes;
-	BIGNUM*         ed;
-	BIGNUM*			red;
-};
-
-
-typedef struct ECKCDSA_VrfySessD2 ECKCDSA_VrfySessD2;
-struct ECKCDSA_VrfySessD2
-{
-	unsigned char*  e_bytes;
-	unsigned char*  ed_bytes;
-	BIGNUM*         ed;
-	EC_POINT*       A;
-	unsigned char*  A_bytes;
-	unsigned char*  d0_bytes;
-};
-
-
-typedef struct ECKCDSA_SignSessD1 ECKCDSA_SignSessD1;
-struct ECKCDSA_SignSessD1
-{
-	BIGNUM*         r;
-	EC_POINT*       A;
-	unsigned char*  A_bytes;
-	unsigned char*  e_bytes;
-	unsigned char*  ed_bytes;
-	BIGNUM*         ed;
-	BIGNUM*			red;
-};
-
-
-typedef struct ECKCDSA_VrfySessD1 ECKCDSA_VrfySessD1;
-struct ECKCDSA_VrfySessD1
-{
-	unsigned char*  e_bytes;
-	unsigned char*  ed_bytes;
-	BIGNUM*         ed;
-	EC_POINT*       A;
-	unsigned char*  A_bytes;
-	unsigned char*  d0_bytes;
-};
-
-
-typedef struct ECKCDSA_SignSessD0 ECKCDSA_SignSessD0;
-struct ECKCDSA_SignSessD0
-{
-	BIGNUM*         r;
-	EC_POINT*       A;
-	unsigned char*  A_bytes;
-	unsigned char*  e_bytes;
-	unsigned char*  ed_bytes;
-	BIGNUM*         ed;
-	BIGNUM*			red;
-};
-
-
-typedef struct ECKCDSA_VrfySessD0 ECKCDSA_VrfySessD0;
-struct ECKCDSA_VrfySessD0
-{
-	unsigned char*  e_bytes;
-	unsigned char*  ed_bytes;
-	BIGNUM*         ed;
-	EC_POINT*       A;
-	unsigned char*  A_bytes;
-	unsigned char*  d0_bytes;
-};
-
-
-void *ECKCDSA_keypair_new(int sec);
-void ECKCDSA_keypair_free(void *obj);
-int ECKCDSA_keypair_gen(int sec, void *obj);
-const char *ECKCDSA_get_name();
-void *ECKCDSA_signature_new(void *keyobj);
-void ECKCDSA_signature_free(void* obj);
-int ECKCDSA_get_sig_len(void *obj);
-int ECKCDSA_sig_encode(void *obj, unsigned char *buf);
-
-void *ECKCDSA_d3_signsess_new(void *keyobj);
-void ECKCDSA_d3_signsess_free(void* obj);
-void *ECKCDSA_d3_vrfysess_new(void *keyobj);
-void ECKCDSA_d3_vrfysess_free(void* obj);
-int ECKCDSA_d3_sign_offline(void *keyobj, void *sessobj, void *sigobj);
-int ECKCDSA_d3_sign_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
-int ECKCDSA_d3_vrfy_offline(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
-int ECKCDSA_d3_vrfy_online(void *keyobj, void *sessobj, void *sigobj);
-
-void *ECKCDSA_d2_signsess_new(void *keyobj);
-void ECKCDSA_d2_signsess_free(void* obj);
-void *ECKCDSA_d2_vrfysess_new(void *keyobj);
-void ECKCDSA_d2_vrfysess_free(void* obj);
-int ECKCDSA_d2_sign_offline(void *keyobj, void *sessobj, void *sigobj);
-int ECKCDSA_d2_sign_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
-int ECKCDSA_d2_vrfy_offline(void *keyobj, void *sessobj, void *sigobj);
-int ECKCDSA_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
-
-void *ECKCDSA_d1_signsess_new(void *keyobj);
-void ECKCDSA_d1_signsess_free(void* obj);
-void *ECKCDSA_d1_vrfysess_new(void *keyobj);
-void ECKCDSA_d1_vrfysess_free(void* obj);
-int ECKCDSA_d1_sign_offline(void *keyobj, void *sessobj, void *sigobj);
-int ECKCDSA_d1_sign_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
-int ECKCDSA_d1_vrfy_offline(void *keyobj, void *sessobj);
-int ECKCDSA_d1_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
-
-void *ECKCDSA_d0_signsess_new(void *keyobj);
-void ECKCDSA_d0_signsess_free(void* obj);
-void *ECKCDSA_d0_vrfysess_new(void *keyobj);
-void ECKCDSA_d0_vrfysess_free(void* obj);
-int ECKCDSA_d0_sign(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
-int ECKCDSA_d0_vrfy(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen);
-
-
-SchemeMethods ECKCDSA_Methods =
-{
-	.mthd_keypair_new = ECKCDSA_keypair_new,
-	.mthd_keypair_free = ECKCDSA_keypair_free,
-	.mthd_keypair_gen = ECKCDSA_keypair_gen,
-	.mthd_get_name = ECKCDSA_get_name,
-	.mthd_signature_new = ECKCDSA_signature_new,
-	.mthd_signature_free = ECKCDSA_signature_free,
-	.mthd_get_sig_len = ECKCDSA_get_sig_len,
-	.mthd_sig_encode = ECKCDSA_sig_encode,
-
-    .mthd_signsess_d3_new = ECKCDSA_d3_signsess_new,
-    .mthd_signsess_d3_free = ECKCDSA_d3_signsess_free,
-    .mthd_vrfysess_d3_new = ECKCDSA_d3_vrfysess_new,
-    .mthd_vrfysess_d3_free = ECKCDSA_d3_vrfysess_free,
-    .mthd_d3_sign_offline = ECKCDSA_d3_sign_offline,
-    .mthd_d3_sign_online = ECKCDSA_d3_sign_online,
-    .mthd_d3_vrfy_offline = ECKCDSA_d3_vrfy_offline,
-    .mthd_d3_vrfy_online = ECKCDSA_d3_vrfy_online,
-
-    .mthd_signsess_d3b_new = NULL,
-    .mthd_signsess_d3b_free = NULL,
-    .mthd_vrfysess_d3b_new = NULL,
-    .mthd_vrfysess_d3b_free = NULL,
-    .mthd_d3b_sign_offline = NULL,
-    .mthd_d3b_sign_online = NULL,
-    .mthd_d3b_vrfy_offline = NULL,
-    .mthd_d3b_vrfy_online = NULL,
-
-    .mthd_signsess_d2_new = ECKCDSA_d2_signsess_new,
-    .mthd_signsess_d2_free = ECKCDSA_d2_signsess_free,
-    .mthd_vrfysess_d2_new = ECKCDSA_d2_vrfysess_new,
-    .mthd_vrfysess_d2_free = ECKCDSA_d2_vrfysess_free,
-    .mthd_d2_sign_offline = ECKCDSA_d2_sign_offline,
-    .mthd_d2_sign_online = ECKCDSA_d2_sign_online,
-    .mthd_d2_vrfy_offline = ECKCDSA_d2_vrfy_offline,
-    .mthd_d2_vrfy_online = ECKCDSA_d2_vrfy_online,
-
-    .mthd_signsess_d2b_new = NULL,
-    .mthd_signsess_d2b_free = NULL,
-    .mthd_vrfysess_d2b_new = NULL,
-    .mthd_vrfysess_d2b_free = NULL,
-    .mthd_d2b_sign_offline = NULL,
-    .mthd_d2b_sign_online = NULL,
-    .mthd_d2b_vrfy_offline = NULL,
-    .mthd_d2b_vrfy_online = NULL,
-
-	.mthd_signsess_d1_new = ECKCDSA_d1_signsess_new,
-	.mthd_signsess_d1_free = ECKCDSA_d1_signsess_free,
-	.mthd_vrfysess_d1_new = ECKCDSA_d1_vrfysess_new,
-	.mthd_vrfysess_d1_free = ECKCDSA_d1_vrfysess_free,
-	.mthd_d1_sign_offline = ECKCDSA_d1_sign_offline,
-	.mthd_d1_sign_online = ECKCDSA_d1_sign_online,
-	.mthd_d1_vrfy_offline = ECKCDSA_d1_vrfy_offline,
-	.mthd_d1_vrfy_online = ECKCDSA_d1_vrfy_online,
-
-	.mthd_signsess_d0_new = ECKCDSA_d0_signsess_new,
-	.mthd_signsess_d0_free = ECKCDSA_d0_signsess_free,
-	.mthd_vrfysess_d0_new = ECKCDSA_d0_vrfysess_new,
-	.mthd_vrfysess_d0_free = ECKCDSA_d0_vrfysess_free,
-	.mthd_d0_sign = ECKCDSA_d0_sign,
-	.mthd_d0_vrfy = ECKCDSA_d0_vrfy,
-};
+	ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)obj;
+	EC_KEY_free(keypair->eckey);
+	BN_free(keypair->group_order);
+	free(keypair);
+}
 
 
 void *ECKCDSA_keypair_new(int sec)
@@ -291,21 +98,8 @@ void *ECKCDSA_keypair_new(int sec)
 	ret->bytelen_go = 0;
 	return ret;
 err:
-	free(ret);
-	EC_KEY_free(eckey);
-	BN_free(w);
-	BN_free(group_order);
-	EC_POINT_free(h);
+    ECKCDSA_keypair_free(ret);
 	return NULL;
-}
-
-
-void ECKCDSA_keypair_free(void *obj)
-{
-	ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)obj;
-	EC_KEY_free(keypair->eckey);
-	BN_free(keypair->group_order);
-	free(keypair);
 }
 
 
@@ -344,6 +138,16 @@ const char *ECKCDSA_get_name()
 }
 
 
+void ECKCDSA_signature_free(void* obj)
+{
+	if (obj == NULL) return;
+	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)obj;
+	free(sig->d_bytes);
+	BN_free(sig->z);
+	free(sig);
+}
+
+
 void *ECKCDSA_signature_new(void *keyobj)
 {
 	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair *)keyobj;
@@ -358,17 +162,6 @@ err:
 	ECKCDSA_signature_free(sig);
 	return NULL;
 }
-
-
-void ECKCDSA_signature_free(void* obj)
-{
-	if (obj == NULL) return;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)obj;
-	free(sig->d_bytes);
-	BN_free(sig->z);
-	free(sig);
-}
-
 
 
 int ECKCDSA_get_sig_len(void *obj)
@@ -394,197 +187,224 @@ int ECKCDSA_sig_encode(void *obj, unsigned char *buf)
 
 
 
-void *ECKCDSA_d3_signsess_new(void *keyobj)
+typedef struct ECKCDSA_SignSessD3 ECKCDSA_SignSessD3;
+struct ECKCDSA_SignSessD3
 {
-	ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+    BIGNUM*         r;
+    EC_POINT*       A;
+    unsigned char*  A_bytes;
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    BIGNUM*			red;
+};
 
-	ECKCDSA_SignSessD3 *sess = malloc(sizeof(ECKCDSA_SignSessD3));
-	if (sess == NULL) return NULL;
 
-	memset(sess, 0, sizeof(ECKCDSA_SignSessD3));
-
-	void *flag = NULL;
-	flag = sess->r = BN_new();if (flag == NULL) goto err;
-	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	flag = sess->ed = BN_new();if (flag == NULL) goto err;
-	flag = sess->red = BN_new();if (flag == NULL) goto err;
-	return sess;
-err:
-	ECKCDSA_d3_signsess_free(sess);
-	return NULL;
-}
+typedef struct ECKCDSA_VrfySessD3 ECKCDSA_VrfySessD3;
+struct ECKCDSA_VrfySessD3
+{
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    EC_POINT*       edP;
+    EC_POINT*       zX;
+    EC_POINT*       A;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
+};
 
 
 void ECKCDSA_d3_signsess_free(void* obj)
 {
-	if (obj == NULL) return;
-	ECKCDSA_SignSessD3 *sess = (ECKCDSA_SignSessD3*)obj;
-	BN_free(sess->r);
-	EC_POINT_free(sess->A);
-	free(sess->A_bytes);
-	free(sess->e_bytes);
-	free(sess->ed_bytes);
-	BN_free(sess->ed);
-	BN_free(sess->red);
-	free(sess);
+    if (obj == NULL) return;
+    ECKCDSA_SignSessD3 *sess = (ECKCDSA_SignSessD3*)obj;
+    BN_free(sess->r);
+    EC_POINT_free(sess->A);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    BN_free(sess->red);
+    free(sess);
 }
 
 
-void *ECKCDSA_d3_vrfysess_new(void *keyobj)
+void *ECKCDSA_d3_signsess_new(void *keyobj)
 {
-	ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_VrfySessD3 *sess = malloc(sizeof(ECKCDSA_VrfySessD3));
-	if (sess == NULL) return NULL;
-	memset(sess, 0, sizeof(ECKCDSA_VrfySessD3));
+    ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
 
-	void *flag = NULL;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	flag = sess->ed = BN_new();if (flag == NULL) goto err;
-	flag = sess->edP = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->zX = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
-	flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	return sess;
+    ECKCDSA_SignSessD3 *sess = malloc(sizeof(ECKCDSA_SignSessD3));
+    if (sess == NULL) return NULL;
+
+    memset(sess, 0, sizeof(ECKCDSA_SignSessD3));
+
+    void *flag = NULL;
+    flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->red = BN_new();if (flag == NULL) goto err;
+    return sess;
 err:
-	ECKCDSA_d3_vrfysess_free(sess);
-	return NULL;
+    ECKCDSA_d3_signsess_free(sess);
+    return NULL;
 }
 
 
 void ECKCDSA_d3_vrfysess_free(void* obj)
 {
-	if (obj == NULL) return;
-	ECKCDSA_VrfySessD3 *sess = (ECKCDSA_VrfySessD3*)obj;
-	free(sess->e_bytes);
-	free(sess->ed_bytes);
-	BN_free(sess->ed);
-	EC_POINT_free(sess->edP);
-	EC_POINT_free(sess->zX);
-	EC_POINT_free(sess->A);
-	free(sess->A_bytes);
-	free(sess->d0_bytes);
-	free(sess);
+    if (obj == NULL) return;
+    ECKCDSA_VrfySessD3 *sess = (ECKCDSA_VrfySessD3*)obj;
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    EC_POINT_free(sess->edP);
+    EC_POINT_free(sess->zX);
+    EC_POINT_free(sess->A);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
+    free(sess);
+}
+
+
+void *ECKCDSA_d3_vrfysess_new(void *keyobj)
+{
+    ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD3 *sess = malloc(sizeof(ECKCDSA_VrfySessD3));
+    if (sess == NULL) return NULL;
+    memset(sess, 0, sizeof(ECKCDSA_VrfySessD3));
+
+    void *flag = NULL;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->edP = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->zX = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    return sess;
+err:
+    ECKCDSA_d3_vrfysess_free(sess);
+    return NULL;
 }
 
 
 int ECKCDSA_d3_sign_offline(void *keyobj, void *sessobj, void *sigobj)
 {
-	/* Rename objects. */
-	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_SignSessD3 *sess = (ECKCDSA_SignSessD3*)sessobj;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
-	int ret;
+    /* Rename objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_SignSessD3 *sess = (ECKCDSA_SignSessD3*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
 
-	/* Pick r */
-	ret = BN_rand_range(sess->r, keys->group_order);
-	assert(ret == 1);
+    /* Pick r */
+    ret = BN_rand_range(sess->r, keys->group_order);
+    assert(ret == 1);
 
-	/* Compute A = rP */
-	ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
-	assert(ret == 1);
+    /* Compute A = rP */
+    ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
+    assert(ret == 1);
 
-	/* Convert A to A_bytes */
-	ret = EC_POINT_point2oct(keys->group,
-		sess->A, POINT_CONVERSION_COMPRESSED,
-		NULL, 0, bnctx);
-	ret = EC_POINT_point2oct(keys->group,
-		sess->A, POINT_CONVERSION_COMPRESSED,
-		sess->A_bytes, ret, bnctx);
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes, ret, bnctx);
 
-	/* Compute d_bytes = H(A_bytes) */
-	PRG(sess->A_bytes, keys->bytelen_point, sig->d_bytes, keys->bytelen_go);
+    /* Compute d_bytes = H(A_bytes) */
+    PRG(sess->A_bytes, keys->bytelen_point, sig->d_bytes, keys->bytelen_go);
 
-	return 0;
+    return 0;
 }
 
 
 int ECKCDSA_d3_sign_online(void *keyobj, void *sessobj, void *sigobj,
-	const unsigned char *msg, int msglen)
+    const unsigned char *msg, int msglen)
 {
-	/* Cast objects. */
-	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_SignSessD3 *sess = (ECKCDSA_SignSessD3*)sessobj;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
-	int ret;
+    /* Cast objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_SignSessD3 *sess = (ECKCDSA_SignSessD3*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
 
-	/* Compute e_bytes = H(m) */
-	PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
 
-	/* Compute e_xor_d_bytes */
-	BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
 
-	/* Convert e_xor_d_bytes to e_xor_d */
-	BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
 
-	/* Compute r - d xor e */
-	BN_mod_sub(sess->red, sess->r, sess->ed, keys->group_order, bnctx);
+    /* Compute r - d xor e */
+    BN_mod_sub(sess->red, sess->r, sess->ed, keys->group_order, bnctx);
 
-	/* Compute z=x(r - d xor e) */
-	ret = BN_mod_mul(sig->z, keys->sk, sess->red, keys->group_order, bnctx);
-	assert(ret == 1);
+    /* Compute z=x(r - d xor e) */
+    ret = BN_mod_mul(sig->z, keys->sk, sess->red, keys->group_order, bnctx);
+    assert(ret == 1);
 
-	return 0;
+    return 0;
 }
 
 
 int ECKCDSA_d3_vrfy_offline(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen)
 {
-	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_VrfySessD3 *sess = (ECKCDSA_VrfySessD3*)sessobj;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
-	int ret;
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD3 *sess = (ECKCDSA_VrfySessD3*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
 
-	/* Compute e_bytes = H(m) */
-	PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
 
-	/* Compute e_xor_d_bytes */
-	BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
 
-	/* Convert e_xor_d_bytes to e_xor_d */
-	BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
 
-	/* Compute (e xor d)P */
-	EC_POINT_mul(keys->group, sess->edP, sess->ed, NULL, NULL, bnctx);
+    /* Compute (e xor d)P */
+    EC_POINT_mul(keys->group, sess->edP, sess->ed, NULL, NULL, bnctx);
 
-	return 0;
+    return 0;
 }
 
 
 int ECKCDSA_d3_vrfy_online(void *keyobj, void *sessobj, void *sigobj)
 {
-	/* Rename objects. */
-	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_VrfySessD3 *sess = (ECKCDSA_VrfySessD3*)sessobj;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
-	int ret;
+    /* Rename objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD3 *sess = (ECKCDSA_VrfySessD3*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
 
-	/* Compute zX   */
-	ret = EC_POINT_mul(keys->group, sess->zX, NULL, keys->PK, sig->z, bnctx);
+    /* Compute zX   */
+    ret = EC_POINT_mul(keys->group, sess->zX, NULL, keys->PK, sig->z, bnctx);
 
-	/* A = (e xor d)P + zX */
-	EC_POINT_add(keys->group, sess->A, sess->edP, sess->zX, bnctx);
+    /* A = (e xor d)P + zX */
+    EC_POINT_add(keys->group, sess->A, sess->edP, sess->zX, bnctx);
 
-	/* Convert A to A_bytes */
-	ret = EC_POINT_point2oct(keys->group,
-		sess->A, POINT_CONVERSION_COMPRESSED,
-		NULL, 0, bnctx);
-	ret = EC_POINT_point2oct(keys->group,
-		sess->A, POINT_CONVERSION_COMPRESSED,
-		sess->A_bytes, ret, bnctx);
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes, ret, bnctx);
 
-	/* d0_bytes = H(A_bytes) */
-	PRG(sess->A_bytes, keys->bytelen_point, sess->d0_bytes, keys->bytelen_go);
+    /* d0_bytes = H(A_bytes) */
+    PRG(sess->A_bytes, keys->bytelen_point, sess->d0_bytes, keys->bytelen_go);
 
-	/* Check d=d0? */
-	ret = BinEq(sig->d_bytes, sess->d0_bytes, keys->bytelen_go);
-	if (ret != 0) return -1;
+    /* Check d=d0? */
+    ret = BinEq(sig->d_bytes, sess->d0_bytes, keys->bytelen_go);
+    if (ret != 0) return -1;
 
-	return 0;
+    return 0;
 }
 
 
@@ -620,34 +440,723 @@ int ECKCDSA_d3_vrfy_online(void *keyobj, void *sessobj, void *sigobj)
 
 
 
-void *ECKCDSA_d2_signsess_new(void *keyobj)
+typedef struct ECKCDSA_SignSessD3b ECKCDSA_SignSessD3b;
+struct ECKCDSA_SignSessD3b
 {
-	ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+    BIGNUM*         r;
+    EC_POINT*       A;
+    unsigned char*  A_bytes;
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    BIGNUM*			red;
+};
 
-	ECKCDSA_SignSessD2 *sess = malloc(sizeof(ECKCDSA_SignSessD2));
-	if (sess == NULL) return NULL;
 
-	memset(sess, 0, sizeof(ECKCDSA_SignSessD2));
+typedef struct ECKCDSA_VrfySessD3b ECKCDSA_VrfySessD3b;
+struct ECKCDSA_VrfySessD3b
+{
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    EC_POINT*       zX;
+    EC_POINT*       A;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
+};
 
-	void *flag = NULL;
-	flag = sess->r = BN_new();if (flag == NULL) goto err;
-	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	flag = sess->ed = BN_new();if (flag == NULL) goto err;
-	flag = sess->red = BN_new();if (flag == NULL) goto err;
-	return sess;
-err:
-	ECKCDSA_d2_signsess_free(sess);
-	return NULL;
+
+void ECKCDSA_d3b_signsess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECKCDSA_SignSessD3b *sess = (ECKCDSA_SignSessD3b*)obj;
+    BN_free(sess->r);
+    EC_POINT_free(sess->A);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    BN_free(sess->red);
+    free(sess);
 }
+
+
+void *ECKCDSA_d3b_signsess_new(void *keyobj)
+{
+    ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+
+    ECKCDSA_SignSessD3b *sess = malloc(sizeof(ECKCDSA_SignSessD3b));
+    if (sess == NULL) return NULL;
+
+    memset(sess, 0, sizeof(ECKCDSA_SignSessD3b));
+
+    void *flag = NULL;
+    flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->red = BN_new();if (flag == NULL) goto err;
+    return sess;
+err:
+    ECKCDSA_d3b_signsess_free(sess);
+    return NULL;
+}
+
+
+void ECKCDSA_d3b_vrfysess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECKCDSA_VrfySessD3b *sess = (ECKCDSA_VrfySessD3b*)obj;
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    EC_POINT_free(sess->zX);
+    EC_POINT_free(sess->A);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
+    free(sess);
+}
+
+
+void *ECKCDSA_d3b_vrfysess_new(void *keyobj)
+{
+    ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD3b *sess = malloc(sizeof(ECKCDSA_VrfySessD3b));
+    if (sess == NULL) return NULL;
+    memset(sess, 0, sizeof(ECKCDSA_VrfySessD3b));
+
+    void *flag = NULL;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->zX = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    return sess;
+err:
+    ECKCDSA_d3b_vrfysess_free(sess);
+    return NULL;
+}
+
+
+int ECKCDSA_d3b_sign_offline(void *keyobj, void *sessobj, void *sigobj)
+{
+    /* Rename objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_SignSessD3b *sess = (ECKCDSA_SignSessD3b*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Pick r */
+    ret = BN_rand_range(sess->r, keys->group_order);
+    assert(ret == 1);
+
+    /* Compute A = rP */
+    ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
+    assert(ret == 1);
+
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes, ret, bnctx);
+
+    /* Compute d_bytes = H(A_bytes) */
+    PRG(sess->A_bytes, keys->bytelen_point, sig->d_bytes, keys->bytelen_go);
+
+    return 0;
+}
+
+
+int ECKCDSA_d3b_sign_online(void *keyobj, void *sessobj, void *sigobj,
+    const unsigned char *msg, int msglen)
+{
+    /* Cast objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_SignSessD3b *sess = (ECKCDSA_SignSessD3b*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+
+    /* Compute r - d xor e */
+    BN_mod_sub(sess->red, sess->r, sess->ed, keys->group_order, bnctx);
+
+    /* Compute z=x(r - d xor e) */
+    ret = BN_mod_mul(sig->z, keys->sk, sess->red, keys->group_order, bnctx);
+    assert(ret == 1);
+
+    return 0;
+}
+
+
+int ECKCDSA_d3b_vrfy_offline(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen)
+{
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD3b *sess = (ECKCDSA_VrfySessD3b*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+
+    return 0;
+}
+
+
+int ECKCDSA_d3b_vrfy_online(void *keyobj, void *sessobj, void *sigobj)
+{
+    /* Rename objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD3b *sess = (ECKCDSA_VrfySessD3b*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* A = (e xor d) * P + z * X */
+    ret = EC_POINT_mul(keys->group, sess->A, sess->ed, keys->PK, sig->z, bnctx);
+
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes, ret, bnctx);
+
+    /* d0_bytes = H(A_bytes) */
+    PRG(sess->A_bytes, keys->bytelen_point, sess->d0_bytes, keys->bytelen_go);
+
+    /* Check d=d0? */
+    ret = BinEq(sig->d_bytes, sess->d0_bytes, keys->bytelen_go);
+    if (ret != 0) return -1;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct ECKCDSA_SignSessD2 ECKCDSA_SignSessD2;
+struct ECKCDSA_SignSessD2
+{
+    BIGNUM*         r;
+    EC_POINT*       A;
+    unsigned char*  A_bytes;
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    BIGNUM*			red;
+};
+
+
+typedef struct ECKCDSA_VrfySessD2 ECKCDSA_VrfySessD2;
+struct ECKCDSA_VrfySessD2
+{
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    EC_POINT*       A;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
+};
 
 
 void ECKCDSA_d2_signsess_free(void* obj)
 {
+    if (obj == NULL) return;
+    ECKCDSA_SignSessD2 *sess = (ECKCDSA_SignSessD2*)obj;
+    BN_free(sess->r);
+    EC_POINT_free(sess->A);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    BN_free(sess->red);
+    free(sess);
+}
+
+
+void *ECKCDSA_d2_signsess_new(void *keyobj)
+{
+    ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+
+    ECKCDSA_SignSessD2 *sess = malloc(sizeof(ECKCDSA_SignSessD2));
+    if (sess == NULL) return NULL;
+
+    memset(sess, 0, sizeof(ECKCDSA_SignSessD2));
+
+    void *flag = NULL;
+    flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->red = BN_new();if (flag == NULL) goto err;
+    return sess;
+err:
+    ECKCDSA_d2_signsess_free(sess);
+    return NULL;
+}
+
+
+void ECKCDSA_d2_vrfysess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECKCDSA_VrfySessD2 *sess = (ECKCDSA_VrfySessD2*)obj;
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    EC_POINT_free(sess->A);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
+    free(sess);
+}
+
+
+void *ECKCDSA_d2_vrfysess_new(void *keyobj)
+{
+    ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD2 *sess = malloc(sizeof(ECKCDSA_VrfySessD2));
+    if (sess == NULL) return NULL;
+    memset(sess, 0, sizeof(ECKCDSA_VrfySessD2));
+
+    void *flag = NULL;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    return sess;
+err:
+    ECKCDSA_d2_vrfysess_free(sess);
+    return NULL;
+}
+
+
+int ECKCDSA_d2_sign_offline(void *keyobj, void *sessobj, void *sigobj)
+{
+    /* Rename objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_SignSessD2 *sess = (ECKCDSA_SignSessD2*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Pick r */
+    ret = BN_rand_range(sess->r, keys->group_order);
+    assert(ret == 1);
+
+    /* Compute A = rP */
+    ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
+    assert(ret == 1);
+
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes, ret, bnctx);
+
+    /* Compute d_bytes = H(A_bytes) */
+    PRG(sess->A_bytes, keys->bytelen_point, sig->d_bytes, keys->bytelen_go);
+
+    return 0;
+}
+
+
+int ECKCDSA_d2_sign_online(void *keyobj, void *sessobj, void *sigobj,
+    const unsigned char *msg, int msglen)
+{
+    /* Cast objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_SignSessD2 *sess = (ECKCDSA_SignSessD2*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+
+    /* Compute r - d xor e */
+    BN_mod_sub(sess->red, sess->r, sess->ed, keys->group_order, bnctx);
+
+    /* Compute z=x(r - d xor e) */
+    ret = BN_mod_mul(sig->z, keys->sk, sess->red, keys->group_order, bnctx);
+    assert(ret == 1);
+
+    return 0;
+}
+
+
+int ECKCDSA_d2_vrfy_offline(void *keyobj, void *sessobj, void *sigobj)
+{
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD2 *sess = (ECKCDSA_VrfySessD2*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    return 0;
+}
+
+
+int ECKCDSA_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen)
+{
+    /* Rename objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD2 *sess = (ECKCDSA_VrfySessD2*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+
+    /* A = (e xor d)P + zX */
+    EC_POINT_mul(keys->group, sess->A, sess->ed, keys->PK, sig->z, bnctx);
+
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes, ret, bnctx);
+
+    /* d0_bytes = H(A_bytes) */
+    PRG(sess->A_bytes, keys->bytelen_point, sess->d0_bytes, keys->bytelen_go);
+
+    /* Check d=d0? */
+    ret = BinEq(sig->d_bytes, sess->d0_bytes, keys->bytelen_go);
+    if (ret != 0) return -1;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct ECKCDSA_VrfySessD2b ECKCDSA_VrfySessD2b;
+struct ECKCDSA_VrfySessD2b
+
+{
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    EC_POINT*       A;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
+};
+
+
+void ECKCDSA_d2b_signsess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECKCDSA_SignSessD2b *sess = (ECKCDSA_SignSessD2b*)obj;
+    BN_free(sess->r);
+    EC_POINT_free(sess->A);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    BN_free(sess->red);
+    free(sess);
+}
+
+
+void *ECKCDSA_d2b_signsess_new(void *keyobj)
+{
+    ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+
+    ECKCDSA_SignSessD2b *sess = malloc(sizeof(ECKCDSA_SignSessD2b));
+    if (sess == NULL) return NULL;
+
+    memset(sess, 0, sizeof(ECKCDSA_SignSessD2b));
+
+    void *flag = NULL;
+    flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->red = BN_new();if (flag == NULL) goto err;
+    return sess;
+err:
+    ECKCDSA_d2b_signsess_free(sess);
+    return NULL;
+}
+
+
+void ECKCDSA_d2b_vrfysess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECKCDSA_VrfySessD2b *sess = (ECKCDSA_VrfySessD2b*)obj;
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    EC_POINT_free(sess->A);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
+    free(sess);
+}
+
+
+void *ECKCDSA_d2b_vrfysess_new(void *keyobj)
+{
+    ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD2b *sess = malloc(sizeof(ECKCDSA_VrfySessD2b));
+    if (sess == NULL) return NULL;
+    memset(sess, 0, sizeof(ECKCDSA_VrfySessD2b));
+
+    void *flag = NULL;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    return sess;
+err:
+    ECKCDSA_d2b_vrfysess_free(sess);
+    return NULL;
+}
+
+
+int ECKCDSA_d2b_sign_offline(void *keyobj, void *sessobj, void *sigobj)
+{
+    /* Rename objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_SignSessD2b *sess = (ECKCDSA_SignSessD2b*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Pick r */
+    ret = BN_rand_range(sess->r, keys->group_order);
+    assert(ret == 1);
+
+    /* Compute A = rP */
+    ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
+    assert(ret == 1);
+
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes, ret, bnctx);
+
+    /* Compute d_bytes = H(A_bytes) */
+    PRG(sess->A_bytes, keys->bytelen_point, sig->d_bytes, keys->bytelen_go);
+
+    return 0;
+}
+
+
+int ECKCDSA_d2b_sign_online(void *keyobj, void *sessobj, void *sigobj,
+    const unsigned char *msg, int msglen)
+{
+    /* Cast objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_SignSessD2b *sess = (ECKCDSA_SignSessD2b*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+
+    /* Compute r - d xor e */
+    BN_mod_sub(sess->red, sess->r, sess->ed, keys->group_order, bnctx);
+
+    /* Compute z=x(r - d xor e) */
+    ret = BN_mod_mul(sig->z, keys->sk, sess->red, keys->group_order, bnctx);
+    assert(ret == 1);
+
+    return 0;
+}
+
+
+int ECKCDSA_d2b_vrfy_offline(void *keyobj, void *sessobj, void *sigobj)
+{
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD2b *sess = (ECKCDSA_VrfySessD2b*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    return 0;
+}
+
+
+int ECKCDSA_d2b_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen)
+{
+    /* Rename objects. */
+    ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
+    ECKCDSA_VrfySessD2b *sess = (ECKCDSA_VrfySessD2b*)sessobj;
+    ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
+    int ret;
+
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+
+    /* A = (e xor d)P + zX */
+    EC_POINT_mul(keys->group, sess->A, sess->ed, keys->PK, sig->z, bnctx);
+
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes, ret, bnctx);
+
+    /* d0_bytes = H(A_bytes) */
+    PRG(sess->A_bytes, keys->bytelen_point, sess->d0_bytes, keys->bytelen_go);
+
+    /* Check d=d0? */
+    ret = BinEq(sig->d_bytes, sess->d0_bytes, keys->bytelen_go);
+    if (ret != 0) return -1;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct ECKCDSA_SignSessD1 ECKCDSA_SignSessD1;
+struct ECKCDSA_SignSessD1
+{
+	BIGNUM*         r;
+	EC_POINT*       A;
+	unsigned char*  A_bytes;
+	unsigned char*  e_bytes;
+	unsigned char*  ed_bytes;
+	BIGNUM*         ed;
+	BIGNUM*			red;
+};
+
+
+typedef struct ECKCDSA_VrfySessD1 ECKCDSA_VrfySessD1;
+struct ECKCDSA_VrfySessD1
+{
+	unsigned char*  e_bytes;
+	unsigned char*  ed_bytes;
+	BIGNUM*         ed;
+	EC_POINT*       A;
+	unsigned char*  A_bytes;
+	unsigned char*  d0_bytes;
+};
+
+
+void ECKCDSA_d1_signsess_free(void* obj)
+{
 	if (obj == NULL) return;
-	ECKCDSA_SignSessD2 *sess = (ECKCDSA_SignSessD2*)obj;
+	ECKCDSA_SignSessD1 *sess = (ECKCDSA_SignSessD1*)obj;
 	BN_free(sess->r);
 	EC_POINT_free(sess->A);
 	free(sess->A_bytes);
@@ -657,170 +1166,6 @@ void ECKCDSA_d2_signsess_free(void* obj)
 	BN_free(sess->red);
 	free(sess);
 }
-
-
-void *ECKCDSA_d2_vrfysess_new(void *keyobj)
-{
-	ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_VrfySessD2 *sess = malloc(sizeof(ECKCDSA_VrfySessD2));
-	if (sess == NULL) return NULL;
-	memset(sess, 0, sizeof(ECKCDSA_VrfySessD2));
-
-	void *flag = NULL;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	flag = sess->ed = BN_new();if (flag == NULL) goto err;
-	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
-	flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
-	return sess;
-err:
-	ECKCDSA_d2_vrfysess_free(sess);
-	return NULL;
-}
-
-
-void ECKCDSA_d2_vrfysess_free(void* obj)
-{
-	if (obj == NULL) return;
-	ECKCDSA_VrfySessD2 *sess = (ECKCDSA_VrfySessD2*)obj;
-	free(sess->e_bytes);
-	free(sess->ed_bytes);
-	BN_free(sess->ed);
-	EC_POINT_free(sess->A);
-	free(sess->A_bytes);
-	free(sess->d0_bytes);
-	free(sess);
-}
-
-
-int ECKCDSA_d2_sign_offline(void *keyobj, void *sessobj, void *sigobj)
-{
-	/* Rename objects. */
-	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_SignSessD2 *sess = (ECKCDSA_SignSessD2*)sessobj;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
-	int ret;
-
-	/* Pick r */
-	ret = BN_rand_range(sess->r, keys->group_order);
-	assert(ret == 1);
-
-	/* Compute A = rP */
-	ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
-	assert(ret == 1);
-
-	/* Convert A to A_bytes */
-	ret = EC_POINT_point2oct(keys->group,
-		sess->A, POINT_CONVERSION_COMPRESSED,
-		NULL, 0, bnctx);
-	ret = EC_POINT_point2oct(keys->group,
-		sess->A, POINT_CONVERSION_COMPRESSED,
-		sess->A_bytes, ret, bnctx);
-
-	/* Compute d_bytes = H(A_bytes) */
-	PRG(sess->A_bytes, keys->bytelen_point, sig->d_bytes, keys->bytelen_go);
-
-	return 0;
-}
-
-
-int ECKCDSA_d2_sign_online(void *keyobj, void *sessobj, void *sigobj,
-	const unsigned char *msg, int msglen)
-{
-	/* Cast objects. */
-	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_SignSessD2 *sess = (ECKCDSA_SignSessD2*)sessobj;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
-	int ret;
-
-	/* Compute e_bytes = H(m) */
-	PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
-
-	/* Compute e_xor_d_bytes */
-	BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
-
-	/* Convert e_xor_d_bytes to e_xor_d */
-	BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
-
-	/* Compute r - d xor e */
-	BN_mod_sub(sess->red, sess->r, sess->ed, keys->group_order, bnctx);
-
-	/* Compute z=x(r - d xor e) */
-	ret = BN_mod_mul(sig->z, keys->sk, sess->red, keys->group_order, bnctx);
-	assert(ret == 1);
-
-	return 0;
-}
-
-
-int ECKCDSA_d2_vrfy_offline(void *keyobj, void *sessobj, void *sigobj)
-{
-	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_VrfySessD2 *sess = (ECKCDSA_VrfySessD2*)sessobj;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
-	int ret;
-
-	return 0;
-}
-
-
-int ECKCDSA_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen)
-{
-	/* Rename objects. */
-	ECKCDSA_KeyPair *keys = (ECKCDSA_KeyPair*)keyobj;
-	ECKCDSA_VrfySessD2 *sess = (ECKCDSA_VrfySessD2*)sessobj;
-	ECKCDSA_Sig *sig = (ECKCDSA_Sig*)sigobj;
-	int ret;
-
-	/* Compute e_bytes = H(m) */
-	PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
-
-	/* Compute e_xor_d_bytes */
-	BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
-
-	/* Convert e_xor_d_bytes to e_xor_d */
-	BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
-
-	/* A = (e xor d)P + zX */
-	EC_POINT_mul(keys->group, sess->A, sess->ed, keys->PK, sig->z, bnctx);
-
-	/* Convert A to A_bytes */
-	ret = EC_POINT_point2oct(keys->group,
-		sess->A, POINT_CONVERSION_COMPRESSED,
-		NULL, 0, bnctx);
-	ret = EC_POINT_point2oct(keys->group,
-		sess->A, POINT_CONVERSION_COMPRESSED,
-		sess->A_bytes, ret, bnctx);
-
-	/* d0_bytes = H(A_bytes) */
-	PRG(sess->A_bytes, keys->bytelen_point, sess->d0_bytes, keys->bytelen_go);
-
-	/* Check d=d0? */
-	ret = BinEq(sig->d_bytes, sess->d0_bytes, keys->bytelen_go);
-	if (ret != 0) return -1;
-
-	return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void *ECKCDSA_d1_signsess_new(void *keyobj)
@@ -847,17 +1192,16 @@ err:
 }
 
 
-void ECKCDSA_d1_signsess_free(void* obj)
+void ECKCDSA_d1_vrfysess_free(void* obj)
 {
 	if (obj == NULL) return;
-	ECKCDSA_SignSessD1 *sess = (ECKCDSA_SignSessD1*)obj;
-	BN_free(sess->r);
-	EC_POINT_free(sess->A);
-	free(sess->A_bytes);
+	ECKCDSA_VrfySessD1 *sess = (ECKCDSA_VrfySessD1*)obj;
 	free(sess->e_bytes);
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
-	BN_free(sess->red);
+	EC_POINT_free(sess->A);
+	free(sess->A_bytes);
+	free(sess->d0_bytes);
 	free(sess);
 }
 
@@ -880,20 +1224,6 @@ void *ECKCDSA_d1_vrfysess_new(void *keyobj)
 err:
 	ECKCDSA_d1_vrfysess_free(sess);
 	return NULL;
-}
-
-
-void ECKCDSA_d1_vrfysess_free(void* obj)
-{
-	if (obj == NULL) return;
-	ECKCDSA_VrfySessD1 *sess = (ECKCDSA_VrfySessD1*)obj;
-	free(sess->e_bytes);
-	free(sess->ed_bytes);
-	BN_free(sess->ed);
-	EC_POINT_free(sess->A);
-	free(sess->A_bytes);
-	free(sess->d0_bytes);
-	free(sess);
 }
 
 
@@ -1056,6 +1386,46 @@ int ECKCDSA_d1_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsi
 
 
 
+typedef struct ECKCDSA_SignSessD0 ECKCDSA_SignSessD0;
+struct ECKCDSA_SignSessD0
+{
+	BIGNUM*         r;
+	EC_POINT*       A;
+	unsigned char*  A_bytes;
+	unsigned char*  e_bytes;
+	unsigned char*  ed_bytes;
+	BIGNUM*         ed;
+	BIGNUM*			red;
+};
+
+
+typedef struct ECKCDSA_VrfySessD0 ECKCDSA_VrfySessD0;
+struct ECKCDSA_VrfySessD0
+{
+	unsigned char*  e_bytes;
+	unsigned char*  ed_bytes;
+	BIGNUM*         ed;
+	EC_POINT*       A;
+	unsigned char*  A_bytes;
+	unsigned char*  d0_bytes;
+};
+
+
+void ECKCDSA_d0_signsess_free(void* obj)
+{
+	if (obj == NULL) return;
+	ECKCDSA_SignSessD0 *sess = (ECKCDSA_SignSessD0*)obj;
+	BN_free(sess->r);
+	EC_POINT_free(sess->A);
+	free(sess->A_bytes);
+	free(sess->e_bytes);
+	free(sess->ed_bytes);
+	BN_free(sess->ed);
+	BN_free(sess->red);
+	free(sess);
+}
+
+
 void *ECKCDSA_d0_signsess_new(void *keyobj)
 {
 	ECKCDSA_KeyPair *keypair = (ECKCDSA_KeyPair*)keyobj;
@@ -1080,17 +1450,16 @@ err:
 }
 
 
-void ECKCDSA_d0_signsess_free(void* obj)
+void ECKCDSA_d0_vrfysess_free(void* obj)
 {
 	if (obj == NULL) return;
-	ECKCDSA_SignSessD0 *sess = (ECKCDSA_SignSessD0*)obj;
-	BN_free(sess->r);
-	EC_POINT_free(sess->A);
-	free(sess->A_bytes);
+	ECKCDSA_VrfySessD0 *sess = (ECKCDSA_VrfySessD0*)obj;
 	free(sess->e_bytes);
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
-	BN_free(sess->red);
+	EC_POINT_free(sess->A);
+	free(sess->A_bytes);
+	free(sess->d0_bytes);
 	free(sess);
 }
 
@@ -1113,20 +1482,6 @@ void *ECKCDSA_d0_vrfysess_new(void *keyobj)
 err:
 	ECKCDSA_d0_vrfysess_free(sess);
 	return NULL;
-}
-
-
-void ECKCDSA_d0_vrfysess_free(void* obj)
-{
-	if (obj == NULL) return;
-	ECKCDSA_VrfySessD0 *sess = (ECKCDSA_VrfySessD0*)obj;
-	free(sess->e_bytes);
-	free(sess->ed_bytes);
-	BN_free(sess->ed);
-	EC_POINT_free(sess->A);
-	free(sess->A_bytes);
-	free(sess->d0_bytes);
-	free(sess);
 }
 
 
@@ -1217,3 +1572,94 @@ int ECKCDSA_d0_vrfy(void *keyobj, void *sessobj, void *sigobj, const unsigned ch
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SchemeMethods ECKCDSA_Methods =
+{
+    .mthd_keypair_new = ECKCDSA_keypair_new,
+    .mthd_keypair_free = ECKCDSA_keypair_free,
+    .mthd_keypair_gen = ECKCDSA_keypair_gen,
+    .mthd_get_name = ECKCDSA_get_name,
+    .mthd_signature_new = ECKCDSA_signature_new,
+    .mthd_signature_free = ECKCDSA_signature_free,
+    .mthd_get_sig_len = ECKCDSA_get_sig_len,
+    .mthd_sig_encode = ECKCDSA_sig_encode,
+
+    .mthd_signsess_d3_new = ECKCDSA_d3_signsess_new,
+    .mthd_signsess_d3_free = ECKCDSA_d3_signsess_free,
+    .mthd_vrfysess_d3_new = ECKCDSA_d3_vrfysess_new,
+    .mthd_vrfysess_d3_free = ECKCDSA_d3_vrfysess_free,
+    .mthd_d3_sign_offline = ECKCDSA_d3_sign_offline,
+    .mthd_d3_sign_online = ECKCDSA_d3_sign_online,
+    .mthd_d3_vrfy_offline = ECKCDSA_d3_vrfy_offline,
+    .mthd_d3_vrfy_online = ECKCDSA_d3_vrfy_online,
+
+    .mthd_signsess_d3b_new = ECKCDSA_d3b_signsess_new,
+    .mthd_signsess_d3b_free = ECKCDSA_d3b_signsess_free,
+    .mthd_vrfysess_d3b_new = ECKCDSA_d3b_vrfysess_new,
+    .mthd_vrfysess_d3b_free = ECKCDSA_d3b_vrfysess_free,
+    .mthd_d3b_sign_offline = ECKCDSA_d3b_sign_offline,
+    .mthd_d3b_sign_online = ECKCDSA_d3b_sign_online,
+    .mthd_d3b_vrfy_offline = ECKCDSA_d3b_vrfy_offline,
+    .mthd_d3b_vrfy_online = ECKCDSA_d3b_vrfy_online,
+
+    .mthd_signsess_d2_new = ECKCDSA_d2_signsess_new,
+    .mthd_signsess_d2_free = ECKCDSA_d2_signsess_free,
+    .mthd_vrfysess_d2_new = ECKCDSA_d2_vrfysess_new,
+    .mthd_vrfysess_d2_free = ECKCDSA_d2_vrfysess_free,
+    .mthd_d2_sign_offline = ECKCDSA_d2_sign_offline,
+    .mthd_d2_sign_online = ECKCDSA_d2_sign_online,
+    .mthd_d2_vrfy_offline = ECKCDSA_d2_vrfy_offline,
+    .mthd_d2_vrfy_online = ECKCDSA_d2_vrfy_online,
+
+    .mthd_signsess_d2b_new = ECKCDSA_d2b_signsess_new,
+    .mthd_signsess_d2b_free = ECKCDSA_d2b_signsess_free,
+    .mthd_vrfysess_d2b_new = ECKCDSA_d2b_vrfysess_new,
+    .mthd_vrfysess_d2b_free = ECKCDSA_d2b_vrfysess_free,
+    .mthd_d2b_sign_offline = ECKCDSA_d2b_sign_offline,
+    .mthd_d2b_sign_online = ECKCDSA_d2b_sign_online,
+    .mthd_d2b_vrfy_offline = ECKCDSA_d2b_vrfy_offline,
+    .mthd_d2b_vrfy_online = ECKCDSA_d2b_vrfy_online,
+
+    .mthd_signsess_d1_new = ECKCDSA_d1_signsess_new,
+    .mthd_signsess_d1_free = ECKCDSA_d1_signsess_free,
+    .mthd_vrfysess_d1_new = ECKCDSA_d1_vrfysess_new,
+    .mthd_vrfysess_d1_free = ECKCDSA_d1_vrfysess_free,
+    .mthd_d1_sign_offline = ECKCDSA_d1_sign_offline,
+    .mthd_d1_sign_online = ECKCDSA_d1_sign_online,
+    .mthd_d1_vrfy_offline = ECKCDSA_d1_vrfy_offline,
+    .mthd_d1_vrfy_online = ECKCDSA_d1_vrfy_online,
+
+    .mthd_signsess_d0_new = ECKCDSA_d0_signsess_new,
+    .mthd_signsess_d0_free = ECKCDSA_d0_signsess_free,
+    .mthd_vrfysess_d0_new = ECKCDSA_d0_vrfysess_new,
+    .mthd_vrfysess_d0_free = ECKCDSA_d0_vrfysess_free,
+    .mthd_d0_sign = ECKCDSA_d0_sign,
+    .mthd_d0_vrfy = ECKCDSA_d0_vrfy,
+};
