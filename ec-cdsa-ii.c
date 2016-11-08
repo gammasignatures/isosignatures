@@ -897,6 +897,243 @@ int ECCDSA2_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsi
 
 
 
+typedef struct ECCDSA2_SignSessD2b ECCDSA2_SignSessD2b;
+struct ECCDSA2_SignSessD2b
+
+{
+    BIGNUM*         r;
+    EC_POINT*       A;
+    BIGNUM*         d;
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    BIGNUM*			xed;
+};
+
+
+typedef struct ECCDSA2_VrfySessD2b ECCDSA2_VrfySessD2b;
+struct ECCDSA2_VrfySessD2b
+
+{
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    EC_POINT*       A;
+    BIGNUM*         d;
+    unsigned char*  d0_bytes;
+};
+
+
+void ECCDSA2_d2b_signsess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECCDSA2_SignSessD2b *sess = (ECCDSA2_SignSessD2b*)obj;
+    BN_free(sess->r);
+    BN_free(sess->d);
+    EC_POINT_free(sess->A);
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    BN_free(sess->xed);
+    free(sess);
+}
+
+
+void *ECCDSA2_d2b_signsess_new(void *keyobj)
+{
+    ECCDSA2_KeyPair *keypair = (ECCDSA2_KeyPair*)keyobj;
+
+    ECCDSA2_SignSessD2b *sess = malloc(sizeof(ECCDSA2_SignSessD2b));
+    if (sess == NULL) return NULL;
+
+    memset(sess, 0, sizeof(ECCDSA2_SignSessD2b));
+
+    void *flag = NULL;
+    flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->d = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->xed = BN_new();if (flag == NULL) goto err;
+    return sess;
+err:
+    ECCDSA2_d2b_signsess_free(sess);
+    return NULL;
+}
+
+
+void ECCDSA2_d2b_vrfysess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECCDSA2_VrfySessD2b *sess = (ECCDSA2_VrfySessD2b*)obj;
+    free(sess->e_bytes);
+    free(sess->ed_bytes);
+    BN_free(sess->ed);
+    EC_POINT_free(sess->A);
+    BN_free(sess->d);
+    free(sess->d0_bytes);
+    free(sess);
+}
+
+
+void *ECCDSA2_d2b_vrfysess_new(void *keyobj)
+{
+    ECCDSA2_KeyPair *keypair = (ECCDSA2_KeyPair*)keyobj;
+    ECCDSA2_VrfySessD2b *sess = malloc(sizeof(ECCDSA2_VrfySessD2b));
+    if (sess == NULL) return NULL;
+    memset(sess, 0, sizeof(ECCDSA2_VrfySessD2b));
+
+    void *flag = NULL;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->ed = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->d = BN_new();if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    return sess;
+err:
+    ECCDSA2_d2b_vrfysess_free(sess);
+    return NULL;
+}
+
+
+int ECCDSA2_d2b_sign_offline(void *keyobj, void *sessobj, void *sigobj)
+{
+    /* Rename objects. */
+    ECCDSA2_KeyPair *keys = (ECCDSA2_KeyPair*)keyobj;
+    ECCDSA2_SignSessD2b *sess = (ECCDSA2_SignSessD2b*)sessobj;
+    ECCDSA2_Sig *sig = (ECCDSA2_Sig*)sigobj;
+    int ret;
+
+    /* Pick r */
+    ret = BN_rand_range(sess->r, keys->group_order);
+    assert(ret == 1);
+
+    /* Compute A = rP */
+    ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
+    assert(ret == 1);
+
+    /* Get d = A.x */
+    ret = EC_POINT_get_affine_coordinates_GFp(keys->group, sess->A, sess->d, NULL, bnctx);
+    assert(ret == 1);
+
+    /* Get d_bytes from d */
+    BN2LenBin(sess->d, sig->d_bytes, keys->bytelen_go);
+
+    return 0;
+}
+
+
+int ECCDSA2_d2b_sign_online(void *keyobj, void *sessobj, void *sigobj,
+    const unsigned char *msg, int msglen)
+{
+    /* Cast objects. */
+    ECCDSA2_KeyPair *keys = (ECCDSA2_KeyPair*)keyobj;
+    ECCDSA2_SignSessD2b *sess = (ECCDSA2_SignSessD2b*)sessobj;
+    ECCDSA2_Sig *sig = (ECCDSA2_Sig*)sigobj;
+    int ret;
+
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+
+    /* Compute x(e xor d)*/
+    ret = BN_mod_mul(sess->xed, keys->sk, sess->ed, keys->group_order, bnctx);
+    assert(ret == 1);
+
+    /* Compute z = r - x(d xor e) */
+    BN_mod_sub(sig->z, sess->r, sess->xed, keys->group_order, bnctx);
+
+    return 0;
+}
+
+
+int ECCDSA2_d2b_vrfy_offline(void *keyobj, void *sessobj, void *sigobj)
+{
+    ECCDSA2_KeyPair *keys = (ECCDSA2_KeyPair*)keyobj;
+    ECCDSA2_VrfySessD2b *sess = (ECCDSA2_VrfySessD2b*)sessobj;
+    ECCDSA2_Sig *sig = (ECCDSA2_Sig*)sigobj;
+    int ret;
+
+    return 0;
+}
+
+
+int ECCDSA2_d2b_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen)
+{
+    /* Rename objects. */
+    ECCDSA2_KeyPair *keys = (ECCDSA2_KeyPair*)keyobj;
+    ECCDSA2_VrfySessD2b *sess = (ECCDSA2_VrfySessD2b*)sessobj;
+    ECCDSA2_Sig *sig = (ECCDSA2_Sig*)sigobj;
+    int ret;
+
+    /* Compute e_bytes = H(m) */
+    PRG(msg, msglen, sess->e_bytes, keys->bytelen_go);
+
+    /* Compute e_xor_d_bytes */
+    BinXor(sig->d_bytes, sess->e_bytes, sess->ed_bytes, keys->bytelen_go);
+
+    /* Convert e_xor_d_bytes to e_xor_d */
+    BN_bin2bn(sess->ed_bytes, keys->bytelen_go, sess->ed);
+
+    /* A = (e xor d)X + zP */
+    ret = EC_POINT_mul(keys->group, sess->A, sig->z, keys->PK, sess->ed, bnctx);
+    assert(ret == 1);
+
+    /* Get d = A.x */
+    ret = EC_POINT_get_affine_coordinates_GFp(keys->group, sess->A, sess->d, NULL, bnctx);
+    assert(ret == 1);
+
+    /* Get d_bytes from d */
+    BN2LenBin(sess->d, sess->d0_bytes, keys->bytelen_go);
+
+    /* Check d=d0? */
+    ret = BinEq(sig->d_bytes, sess->d0_bytes, keys->bytelen_go);
+    if (ret != 0) return -1;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 typedef struct ECCDSA2_SignSessD1 ECCDSA2_SignSessD1;
 struct ECCDSA2_SignSessD1
 {
