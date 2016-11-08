@@ -14,31 +14,55 @@ struct SchemeMethods
     int (*mthd_get_sig_len)(void *obj);
     int (*mthd_sig_encode)(void *obj, unsigned char *buf);
 
-	/* Deployment-3 related fields */
-	void *(*mthd_signsess_d3_new)(void *keyobj);
-	void(*mthd_signsess_d3_free)(void* obj);
-	void *(*mthd_vrfysess_d3_new)(void *keyobj);
-	void(*mthd_vrfysess_d3_free)(void* obj);
-	int(*mthd_d3_sign_offline)(void *keyobj, void *sessobj, void *sigobj);
-	int(*mthd_d3_sign_online)(void *keyobj, void *sessobj, void *sigobj,
-		const unsigned char *msg, int msglen);
-	int(*mthd_d3_vrfy_offline)(void *keyobj, void *sessobj, void *sigobj,
-		const unsigned char *msg, int msglen);
-	int(*mthd_d3_vrfy_online)(void *keyobj, void *sessobj, void *sigobj);
+    /* Deployment-3 related fields */
+    void *(*mthd_signsess_d3_new)(void *keyobj);
+    void(*mthd_signsess_d3_free)(void* obj);
+    void *(*mthd_vrfysess_d3_new)(void *keyobj);
+    void(*mthd_vrfysess_d3_free)(void* obj);
+    int(*mthd_d3_sign_offline)(void *keyobj, void *sessobj, void *sigobj);
+    int(*mthd_d3_sign_online)(void *keyobj, void *sessobj, void *sigobj,
+        const unsigned char *msg, int msglen);
+    int(*mthd_d3_vrfy_offline)(void *keyobj, void *sessobj, void *sigobj,
+        const unsigned char *msg, int msglen);
+    int(*mthd_d3_vrfy_online)(void *keyobj, void *sessobj, void *sigobj);
 
-	/* Deployment-2 related fields */
-	void *(*mthd_signsess_d2_new)(void *keyobj);
-	void(*mthd_signsess_d2_free)(void* obj);
-	void *(*mthd_vrfysess_d2_new)(void *keyobj);
-	void(*mthd_vrfysess_d2_free)(void* obj);
-	int(*mthd_d2_sign_offline)(void *keyobj, void *sessobj, void *sigobj);
-	int(*mthd_d2_sign_online)(void *keyobj, void *sessobj, void *sigobj,
-		const unsigned char *msg, int msglen);
-	int(*mthd_d2_vrfy_offline)(void *keyobj, void *sessobj, void *sigobj);
-	int(*mthd_d2_vrfy_online)(void *keyobj, void *sessobj, void *sigobj,
-		const unsigned char *msg, int msglen);
+    /* Deployment-3b related fields */
+    void *(*mthd_signsess_d3b_new)(void *keyobj);
+    void(*mthd_signsess_d3b_free)(void* obj);
+    void *(*mthd_vrfysess_d3b_new)(void *keyobj);
+    void(*mthd_vrfysess_d3b_free)(void* obj);
+    int(*mthd_d3b_sign_offline)(void *keyobj, void *sessobj, void *sigobj);
+    int(*mthd_d3b_sign_online)(void *keyobj, void *sessobj, void *sigobj,
+        const unsigned char *msg, int msglen);
+    int(*mthd_d3b_vrfy_offline)(void *keyobj, void *sessobj, void *sigobj,
+        const unsigned char *msg, int msglen);
+    int(*mthd_d3b_vrfy_online)(void *keyobj, void *sessobj, void *sigobj);
 
-	/* Deployment-1 related fields */
+    /* Deployment-2 related fields */
+    void *(*mthd_signsess_d2_new)(void *keyobj);
+    void(*mthd_signsess_d2_free)(void* obj);
+    void *(*mthd_vrfysess_d2_new)(void *keyobj);
+    void(*mthd_vrfysess_d2_free)(void* obj);
+    int(*mthd_d2_sign_offline)(void *keyobj, void *sessobj, void *sigobj);
+    int(*mthd_d2_sign_online)(void *keyobj, void *sessobj, void *sigobj,
+        const unsigned char *msg, int msglen);
+    int(*mthd_d2_vrfy_offline)(void *keyobj, void *sessobj, void *sigobj);
+    int(*mthd_d2_vrfy_online)(void *keyobj, void *sessobj, void *sigobj,
+        const unsigned char *msg, int msglen);
+
+    /* Deployment-2b related fields */
+    void *(*mthd_signsess_d2b_new)(void *keyobj);
+    void(*mthd_signsess_d2b_free)(void* obj);
+    void *(*mthd_vrfysess_d2b_new)(void *keyobj);
+    void(*mthd_vrfysess_d2b_free)(void* obj);
+    int(*mthd_d2b_sign_offline)(void *keyobj, void *sessobj, void *sigobj);
+    int(*mthd_d2b_sign_online)(void *keyobj, void *sessobj, void *sigobj,
+        const unsigned char *msg, int msglen);
+    int(*mthd_d2b_vrfy_offline)(void *keyobj, void *sessobj, void *sigobj);
+    int(*mthd_d2b_vrfy_online)(void *keyobj, void *sessobj, void *sigobj,
+        const unsigned char *msg, int msglen);
+
+    /* Deployment-1 related fields */
 	void *(*mthd_signsess_d1_new)(void *keyobj);
 	void(*mthd_signsess_d1_free)(void* obj);
 	void *(*mthd_vrfysess_d1_new)(void *keyobj);
@@ -209,8 +233,8 @@ const unsigned char *Scheme_get_name(Scheme *sch);
 typedef struct SignSessionD3 SignSessionD3;
 struct SignSessionD3
 {
-	Scheme* sch;
-	void*   obj;
+    Scheme* sch;
+    void*   obj;
 };
 
 
@@ -221,8 +245,8 @@ struct SignSessionD3
 typedef struct VrfySessionD3 VrfySessionD3;
 struct VrfySessionD3
 {
-	Scheme* sch;
-	void*   obj;
+    Scheme* sch;
+    void*   obj;
 };
 
 
@@ -287,7 +311,7 @@ void VrfySessionD3_free(VrfySessionD3 *sess);
 * \return  0(OK), or -1(failed).
 */
 int Scheme_D3_sign_offline(Scheme *sch, KeyPair *keypair,
-	SignSessionD3 *sess, Signature *sig);
+    SignSessionD3 *sess, Signature *sig);
 
 
 /**
@@ -303,8 +327,8 @@ int Scheme_D3_sign_offline(Scheme *sch, KeyPair *keypair,
 * \return  0(OK), or -1(failed).
 */
 int Scheme_D3_sign_online(Scheme *sch, KeyPair *keypair,
-	SignSessionD3 *sess, Signature *sig,
-	const unsigned char *msg, int msglen);
+    SignSessionD3 *sess, Signature *sig,
+    const unsigned char *msg, int msglen);
 
 
 /**
@@ -320,7 +344,7 @@ int Scheme_D3_sign_online(Scheme *sch, KeyPair *keypair,
 * \return  0(accept), or 1(reject), or <0(error).
 */
 int Scheme_D3_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD3 *sess,
-	Signature *sig, const unsigned char *msg, int msglen);
+    Signature *sig, const unsigned char *msg, int msglen);
 
 
 /**
@@ -334,7 +358,173 @@ int Scheme_D3_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD3 *sess,
 * \return  0(accept), or 1(reject), or <0(error).
 */
 int Scheme_D3_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD3 *sess,
-	Signature *sig);
+    Signature *sig);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+* A structure to hold intermediate values used in a signing session.
+* It is opaque, since the processes differ from scheme to scheme.
+*/
+typedef struct SignSessionD3b SignSessionD3b;
+struct SignSessionD3b
+
+{
+    Scheme* sch;
+    void*   obj;
+};
+
+
+/**
+* A structure to hold intermediate values used in a signing session.
+* It is opaque, since the processes differ from scheme to scheme.
+*/
+typedef struct VrfySessionD3b VrfySessionD3b;
+struct VrfySessionD3b
+
+{
+    Scheme* sch;
+    void*   obj;
+};
+
+
+/**
+* Allocate for a context used to generate a signature.
+*
+* \param keypair       A KeyPair object.
+* \param sch           A scheme object.
+*
+* \return  A context object if OK, or NULL if error.
+*
+* \note    Once allocated, a SignSessionD3b object
+*          can be used for many more times,
+*          as long as it works with unchanged parameters.
+*
+* \note    Remember to free it by calling SignSessionD3b_free().
+*/
+SignSessionD3b *SignSessionD3b_new(KeyPair *keypair, Scheme *sch);
+
+
+/**
+* Free a session context object.
+*
+* \param sess  object to free.
+*/
+void SignSessionD3b_free(SignSessionD3b *sess);
+
+
+/**
+* Allocate for a context used to verify a signature.
+*
+* \param keypair       A KeyPair object.
+* \param sch           A scheme object.
+*
+* \return  A context object if OK, or NULL if error.
+*
+* \note    Once allocated, a SignSessionD3b object
+*          can be used for many more times,
+*          as long as it works with unchanged parameters.
+*
+* \note    Remember to free it by calling SignSessionD3b_free().
+*/
+VrfySessionD3b *VrfySessionD3b_new(KeyPair *keypair, Scheme *sch);
+
+
+/**
+* Free a session context object.
+*
+* \param sess  object to free.
+*/
+void VrfySessionD3b_free(VrfySessionD3b *sess);
+
+
+/**
+* Run offline phase.
+*
+* \param sch       A Scheme object.
+* \param keypair   Key-pair used to sign.
+* \param sess      Context for this signing session.
+* \param sig       Offline part of signature (if exists) goes here.
+*
+* \return  0(OK), or -1(failed).
+*/
+int Scheme_D3b_sign_offline(Scheme *sch, KeyPair *keypair,
+    SignSessionD3b *sess, Signature *sig);
+
+
+/**
+* Run online phase.
+*
+* \param sch       A Scheme object.
+* \param keypair   Key-pair used to sign.
+* \param sess      Context for this signing session.
+* \param sig       Online part of signature (if exists) goes here.
+* \param msg       Message to be signed.
+* \param msglen    Length of message. Ensure it's larger than bitlen_rec.
+*
+* \return  0(OK), or -1(failed).
+*/
+int Scheme_D3b_sign_online(Scheme *sch, KeyPair *keypair,
+    SignSessionD3b *sess, Signature *sig,
+    const unsigned char *msg, int msglen);
+
+
+/**
+* Run offline phase of verification.
+*
+* \param sch       A scheme object.
+* \param keypair   A key-pair used to verify the signature.
+* \param sess      Context for this verifying session.
+* \param sig		A signature object, possibly containing offline signature.
+* \param msg		The message to be signed.
+* \param msglen	Length of message in byte.
+*
+* \return  0(accept), or 1(reject), or <0(error).
+*/
+int Scheme_D3b_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD3b *sess,
+    Signature *sig, const unsigned char *msg, int msglen);
+
+
+/**
+* Run online phase of verification.
+*
+* \param sch       A scheme object.
+* \param keypair   A key-pair used to verify the signature.
+* \param sess      Context for this verifying session.
+* \param sig       A signature to be verified.
+*
+* \return  0(accept), or 1(reject), or <0(error).
+*/
+int Scheme_D3b_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD3b *sess,
+    Signature *sig);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /**
@@ -344,8 +534,8 @@ int Scheme_D3_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD3 *sess,
 typedef struct SignSessionD2 SignSessionD2;
 struct SignSessionD2
 {
-	Scheme* sch;
-	void*   obj;
+    Scheme* sch;
+    void*   obj;
 };
 
 
@@ -356,8 +546,8 @@ struct SignSessionD2
 typedef struct VrfySessionD2 VrfySessionD2;
 struct VrfySessionD2
 {
-	Scheme* sch;
-	void*   obj;
+    Scheme* sch;
+    void*   obj;
 };
 
 
@@ -422,7 +612,7 @@ void VrfySessionD2_free(VrfySessionD2 *sess);
 * \return  0(OK), or -1(failed).
 */
 int Scheme_D2_sign_offline(Scheme *sch, KeyPair *keypair,
-	SignSessionD2 *sess, Signature *sig);
+    SignSessionD2 *sess, Signature *sig);
 
 
 /**
@@ -438,8 +628,8 @@ int Scheme_D2_sign_offline(Scheme *sch, KeyPair *keypair,
 * \return  0(OK), or -1(failed).
 */
 int Scheme_D2_sign_online(Scheme *sch, KeyPair *keypair,
-	SignSessionD2 *sess, Signature *sig,
-	const unsigned char *msg, int msglen);
+    SignSessionD2 *sess, Signature *sig,
+    const unsigned char *msg, int msglen);
 
 
 /**
@@ -453,7 +643,7 @@ int Scheme_D2_sign_online(Scheme *sch, KeyPair *keypair,
 * \return  0(accept), or 1(reject), or <0(error).
 */
 int Scheme_D2_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD2 *sess,
-	Signature *sig);
+    Signature *sig);
 
 
 /**
@@ -469,7 +659,173 @@ int Scheme_D2_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD2 *sess,
 * \return  0(accept), or 1(reject), or <0(error).
 */
 int Scheme_D2_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD2 *sess,
-	Signature *sig, const unsigned char *msg, int msglen);
+    Signature *sig, const unsigned char *msg, int msglen);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+* A structure to hold intermediate values used in a signing session.
+* It is opaque, since the processes differ from scheme to scheme.
+*/
+typedef struct SignSessionD2b SignSessionD2b;
+struct SignSessionD2b
+
+{
+    Scheme* sch;
+    void*   obj;
+};
+
+
+/**
+* A structure to hold intermediate values used in a signing session.
+* It is opaque, since the processes differ from scheme to scheme.
+*/
+typedef struct VrfySessionD2b VrfySessionD2b;
+struct VrfySessionD2b
+
+{
+    Scheme* sch;
+    void*   obj;
+};
+
+
+/**
+* Allocate for a context used to generate a signature.
+*
+* \param keypair       A KeyPair object.
+* \param sch           A scheme object.
+*
+* \return  A context object if OK, or NULL if error.
+*
+* \note    Once allocated, a SignSessionD2b object
+*          can be used for many more times,
+*          as long as it works with unchanged parameters.
+*
+* \note    Remember to free it by calling SignSessionD2b_free().
+*/
+SignSessionD2b *SignSessionD2b_new(KeyPair *keypair, Scheme *sch);
+
+
+/**
+* Free a session context object.
+*
+* \param sess  object to free.
+*/
+void SignSessionD2b_free(SignSessionD2b *sess);
+
+
+/**
+* Allocate for a context used to verify a signature.
+*
+* \param keypair       A KeyPair object.
+* \param sch           A scheme object.
+*
+* \return  A context object if OK, or NULL if error.
+*
+* \note    Once allocated, a SignSessionD2b object
+*          can be used for many more times,
+*          as long as it works with unchanged parameters.
+*
+* \note    Remember to free it by calling SignSessionD2b_free().
+*/
+VrfySessionD2b *VrfySessionD2b_new(KeyPair *keypair, Scheme *sch);
+
+
+/**
+* Free a session context object.
+*
+* \param sess  object to free.
+*/
+void VrfySessionD2b_free(VrfySessionD2b *sess);
+
+
+/**
+* Run offline phase.
+*
+* \param sch       A Scheme object.
+* \param keypair   Key-pair used to sign.
+* \param sess      Context for this signing session.
+* \param sig       Offline part of signature (if exists) goes here.
+*
+* \return  0(OK), or -1(failed).
+*/
+int Scheme_D2b_sign_offline(Scheme *sch, KeyPair *keypair,
+    SignSessionD2b *sess, Signature *sig);
+
+
+/**
+* Run online phase.
+*
+* \param sch       A Scheme object.
+* \param keypair   Key-pair used to sign.
+* \param sess      Context for this signing session.
+* \param sig       Online part of signature (if exists) goes here.
+* \param msg       Message to be signed.
+* \param msglen    Length of message. Ensure it's larger than bitlen_rec.
+*
+* \return  0(OK), or -1(failed).
+*/
+int Scheme_D2b_sign_online(Scheme *sch, KeyPair *keypair,
+    SignSessionD2b *sess, Signature *sig,
+    const unsigned char *msg, int msglen);
+
+
+/**
+* Run offline phase of verification.
+*
+* \param sch       A scheme object.
+* \param keypair   A key-pair used to verify the signature.
+* \param sess      Context for this verifying session.
+* \param sig		A signature object, possibly containing offline signature.
+*
+* \return  0(accept), or 1(reject), or <0(error).
+*/
+int Scheme_D2b_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD2b *sess,
+    Signature *sig);
+
+
+/**
+* Run online phase of verification.
+*
+* \param sch       A scheme object.
+* \param keypair   A key-pair used to verify the signature.
+* \param sess      Context for this verifying session.
+* \param sig       A signature to be verified.
+* \param msg		The message to be signed.
+* \param msglen	   Length of message in byte.
+*
+* \return  0(accept), or 1(reject), or <0(error).
+*/
+int Scheme_D2b_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD2b *sess,
+    Signature *sig, const unsigned char *msg, int msglen);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -608,6 +964,13 @@ int Scheme_D1_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD1 *sess);
 */
 int Scheme_D1_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD1 *sess,
 	Signature *sig, const unsigned char *msg, int msglen);
+
+
+
+
+
+
+
 
 
 

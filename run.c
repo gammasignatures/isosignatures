@@ -23,7 +23,7 @@ void print_usage(){
 "               scheme should be one of the following:\n"
 "               ecdsa/ecrdsa/eckcdsa/eccdsa2. \n\n"
 "   -deploy d   Which deployment to use?\n"
-"				Value d should be 0/1/2/3. (Default:3) \n\n"
+"				Value d should be 0/10/20/21/30/31. (Default:30) \n\n"
 "   -sec n      Security parameter.\n"
 "               n should be 160/192/224/256/384/521.(Default: 256).\n\n"
 "   -msglen m   message length in bit. (Default: n)\n\n"
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
     int sigcount = 100;
     int usrcount = 10;
     int verbose=1;
-    int deploy=3;
+    int deploy=30;
     int simple=0;
     InitCrypt();
 
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 	if (bitlen_msg == -1) bitlen_msg = bitlen_sec;
 
 	switch (deploy) {
-	case 1:
+	case 10:
 	{
 		clock_t s_tot = 0;
 		clock_t son_tot = 0;
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 			(int)von_tot);
 	}
 		break;
-	case 2:
+	case 20:
 	{
 		clock_t s_tot = 0;
 		clock_t son_tot = 0;
@@ -156,15 +156,39 @@ int main(int argc, char **argv)
 			"Sign online : %d\n"
 			"Vrfy tot    : %d\n"
 			"Vrfy online : %d\n",
-            deploy,
+			deploy,
 			sigcount*usrcount,
 			(int)s_tot,
 			(int)son_tot,
 			(int)v_tot,
 			(int)von_tot);
 	}
-		break;
-	case 3:
+	break;
+	case 21:
+	{
+		clock_t s_tot = 0;
+		clock_t son_tot = 0;
+		clock_t v_tot = 0;
+		clock_t von_tot = 0;
+		testDeploy2b(verbose, sch_id, bitlen_sec,
+			bitlen_sec,
+			sigcount, usrcount,
+			&s_tot, &son_tot, &v_tot, &von_tot);
+
+		printf("\ndeployment=%d, sessionCount=%d\n"
+			"Sign        : %d\n"
+			"Sign online : %d\n"
+			"Vrfy tot    : %d\n"
+			"Vrfy online : %d\n",
+			deploy,
+			sigcount*usrcount,
+			(int)s_tot,
+			(int)son_tot,
+			(int)v_tot,
+			(int)von_tot);
+	}
+	break;
+	case 30:
 	{
 		clock_t s_tot = 0;
 		clock_t son_tot = 0;
@@ -180,14 +204,38 @@ int main(int argc, char **argv)
 			"Sign online : %d\n"
 			"Vrfy tot    : %d\n"
 			"Vrfy online : %d\n",
-            deploy,
+			deploy,
 			sigcount*usrcount,
 			(int)s_tot,
 			(int)son_tot,
 			(int)v_tot,
 			(int)von_tot);
 	}
-		break;
+	break;
+	case 31:
+	{
+		clock_t s_tot = 0;
+		clock_t son_tot = 0;
+		clock_t v_tot = 0;
+		clock_t von_tot = 0;
+		testDeploy3b(verbose, sch_id, bitlen_sec,
+			bitlen_sec,
+			sigcount, usrcount,
+			&s_tot, &son_tot, &v_tot, &von_tot);
+
+		printf("\ndeployment=%d, sessionCount=%d\n"
+			"Sign        : %d\n"
+			"Sign online : %d\n"
+			"Vrfy tot    : %d\n"
+			"Vrfy online : %d\n",
+			deploy,
+			sigcount*usrcount,
+			(int)s_tot,
+			(int)son_tot,
+			(int)v_tot,
+			(int)von_tot);
+	}
+	break;
 	default:
 	{
 		clock_t s_tot = 0;

@@ -1216,6 +1216,15 @@ SchemeMethods ECRDSA_Methods =
     .mthd_d3_vrfy_offline = ECRDSA_d3_vrfy_offline,
     .mthd_d3_vrfy_online = ECRDSA_d3_vrfy_online,
 
+    .mthd_signsess_d3b_new = NULL,
+    .mthd_signsess_d3b_free = NULL,
+    .mthd_vrfysess_d3b_new = NULL,
+    .mthd_vrfysess_d3b_free = NULL,
+    .mthd_d3b_sign_offline = NULL,
+    .mthd_d3b_sign_online = NULL,
+    .mthd_d3b_vrfy_offline = NULL,
+    .mthd_d3b_vrfy_online = NULL,
+
     .mthd_signsess_d2_new = ECRDSA_d2_signsess_new,
     .mthd_signsess_d2_free = ECRDSA_d2_signsess_free,
     .mthd_vrfysess_d2_new = ECRDSA_d2_vrfysess_new,
@@ -1224,6 +1233,15 @@ SchemeMethods ECRDSA_Methods =
     .mthd_d2_sign_online = ECRDSA_d2_sign_online,
     .mthd_d2_vrfy_offline = ECRDSA_d2_vrfy_offline,
     .mthd_d2_vrfy_online = ECRDSA_d2_vrfy_online,
+
+    .mthd_signsess_d2b_new = NULL,
+    .mthd_signsess_d2b_free = NULL,
+    .mthd_vrfysess_d2b_new = NULL,
+    .mthd_vrfysess_d2b_free = NULL,
+    .mthd_d2b_sign_offline = NULL,
+    .mthd_d2b_sign_online = NULL,
+    .mthd_d2b_vrfy_offline = NULL,
+    .mthd_d2b_vrfy_online = NULL,
 
     .mthd_signsess_d1_new = ECRDSA_d1_signsess_new,
     .mthd_signsess_d1_free = ECRDSA_d1_signsess_free,

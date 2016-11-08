@@ -31,35 +31,70 @@
 
 
 /**
- * Select a scheme, specify params, and run the scheme in Deployment 3.
- * 
- * In Deployment 3, verifier knows msg and d before its offline phase.
- *
- * \param verbose       Whether to enable verbose mode.
- * \param schid         Which scheme? Use SCHID_* here.
- * \param bitlen_sec    Security parameter. Use SEC_* here.
- * \param bitlen_msg    Message length.
- * \param sign_count    How many signatures to generate for one signer.
- * \param user_count    How many signers.
- *
- * \param ret_sign_tot  Total signing time will go here.
- * \param ret_sign_onl  Online signing time will go here.
- * \param ret_vrfy_tot  Total vrfying time will go here.
- * \param ret_vrfy_onl  Online vrfying time will go here.
- *
- * \return  0(OK), or -1(failed).
- */
+* Select a scheme, specify params, and run the scheme in Deployment 3.
+*
+* In Deployment 3,
+*	verifier in-advance knowledge of PK     : true
+*   verifier in-advance knowledge of msg    : true
+*   verifier in-advance knowledge of d      : true
+*
+* \param verbose       Whether to enable verbose mode.
+* \param schid         Which scheme? Use SCHID_* here.
+* \param bitlen_sec    Security parameter. Use SEC_* here.
+* \param bitlen_msg    Message length.
+* \param sign_count    How many signatures to generate for one signer.
+* \param user_count    How many signers.
+*
+* \param ret_sign_tot  Total signing time will go here.
+* \param ret_sign_onl  Online signing time will go here.
+* \param ret_vrfy_tot  Total vrfying time will go here.
+* \param ret_vrfy_onl  Online vrfying time will go here.
+*
+* \return  0(OK), or -1(failed).
+*/
 int testDeploy3(int verbose, int schid, int bitlen_sec,
-		int bitlen_msg,
-		int sign_count, int user_count,
-		clock_t *ret_sign_tot, clock_t *ret_sign_onl,
-		clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl);
+    int bitlen_msg,
+    int sign_count, int user_count,
+    clock_t *ret_sign_tot, clock_t *ret_sign_onl,
+    clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl);
+
+
+/**
+* Select a scheme, specify params, and run the scheme in Deployment 3b.
+*
+* In Deployment 3b,
+*	verifier in-advance knowledge of PK     : false
+*   verifier in-advance knowledge of msg    : true
+*   verifier in-advance knowledge of d      : true
+*
+* \param verbose       Whether to enable verbose mode.
+* \param schid         Which scheme? Use SCHID_* here.
+* \param bitlen_sec    Security parameter. Use SEC_* here.
+* \param bitlen_msg    Message length.
+* \param sign_count    How many signatures to generate for one signer.
+* \param user_count    How many signers.
+*
+* \param ret_sign_tot  Total signing time will go here.
+* \param ret_sign_onl  Online signing time will go here.
+* \param ret_vrfy_tot  Total vrfying time will go here.
+* \param ret_vrfy_onl  Online vrfying time will go here.
+*
+* \return  0(OK), or -1(failed).
+*/
+int testDeploy3b(int verbose, int schid, int bitlen_sec,
+    int bitlen_msg,
+    int sign_count, int user_count,
+    clock_t *ret_sign_tot, clock_t *ret_sign_onl,
+    clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl);
 
 
 /**
 * Select a scheme, specify params, and run the scheme in Deployment 2.
 *
-* In Deployment 2, verifier knows d before its offline phase.
+* In Deployment 2,
+*	verifier in-advance knowledge of PK     : true
+*   verifier in-advance knowledge of msg    : false
+*   verifier in-advance knowledge of d      : true
 *
 * \param verbose       Whether to enable verbose mode.
 * \param schid         Which scheme? Use SCHID_* here.
@@ -76,16 +111,48 @@ int testDeploy3(int verbose, int schid, int bitlen_sec,
 * \return  0(OK), or -1(failed).
 */
 int testDeploy2(int verbose, int schid, int bitlen_sec,
-		int bitlen_msg,
-		int sign_count, int user_count,
-		clock_t *ret_sign_tot, clock_t *ret_sign_onl,
-		clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl);
+    int bitlen_msg,
+    int sign_count, int user_count,
+    clock_t *ret_sign_tot, clock_t *ret_sign_onl,
+    clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl);
+
+
+/**
+* Select a scheme, specify params, and run the scheme in Deployment 2b.
+*
+* In Deployment 2b,
+*	verifier in-advance knowledge of PK     : false
+*   verifier in-advance knowledge of msg    : false
+*   verifier in-advance knowledge of d      : true
+*
+* \param verbose       Whether to enable verbose mode.
+* \param schid         Which scheme? Use SCHID_* here.
+* \param bitlen_sec    Security parameter. Use SEC_* here.
+* \param bitlen_msg    Message length.
+* \param sign_count    How many signatures to generate for one signer.
+* \param user_count    How many signers.
+*
+* \param ret_sign_tot  Total signing time will go here.
+* \param ret_sign_onl  Online signing time will go here.
+* \param ret_vrfy_tot  Total vrfying time will go here.
+* \param ret_vrfy_onl  Online vrfying time will go here.
+*
+* \return  0(OK), or -1(failed).
+*/
+int testDeploy2b(int verbose, int schid, int bitlen_sec,
+    int bitlen_msg,
+    int sign_count, int user_count,
+    clock_t *ret_sign_tot, clock_t *ret_sign_onl,
+    clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl);
 
 
 /**
 * Select a scheme, specify params, and run the scheme in Deployment 1.
 *
-* In Deployment 1, verifier knows nothing before its offline phase.
+* In Deployment 1,
+*	verifier in-advance knowledge of PK     : true/false
+*   verifier in-advance knowledge of msg    : false
+*   verifier in-advance knowledge of d      : false
 *
 * \param verbose       Whether to enable verbose mode.
 * \param schid         Which scheme? Use SCHID_* here.
@@ -111,7 +178,7 @@ int testDeploy1(int verbose, int schid, int bitlen_sec,
 /**
 * Select a scheme, specify params, and run the scheme in Deployment 0.
 *
-* Deployment 0 means the completely online mode.
+* In Deployment 0, everything is done online. No pre-processing is permitted.
 *
 * \param verbose       Whether to enable verbose mode.
 * \param schid         Which scheme? Use SCHID_* here.

@@ -105,55 +105,55 @@ const unsigned char *Scheme_get_name(Scheme *sch)
 
 SignSessionD3 *SignSessionD3_new(KeyPair *keypair, Scheme *sch)
 {
-	if (keypair == NULL) return NULL;
-	if (sch == NULL) return NULL;
-	SignSessionD3 *ret = (SignSessionD3*)malloc(sizeof(SignSessionD3));
-	ret->sch = sch;
-	void *obj = sch->imp->mthd_signsess_d3_new(keypair->obj);
-	if (obj == NULL) goto err;
-	ret->obj = obj;
-	return ret;
+    if (keypair == NULL) return NULL;
+    if (sch == NULL) return NULL;
+    SignSessionD3 *ret = (SignSessionD3*)malloc(sizeof(SignSessionD3));
+    ret->sch = sch;
+    void *obj = sch->imp->mthd_signsess_d3_new(keypair->obj);
+    if (obj == NULL) goto err;
+    ret->obj = obj;
+    return ret;
 err:
-	SignSessionD3_free(ret);
-	return NULL;
+    SignSessionD3_free(ret);
+    return NULL;
 }
 
 
 void SignSessionD3_free(SignSessionD3 *sess)
 {
-	if (sess == NULL) return;
-	sess->sch->imp->mthd_signsess_d3_free(sess->obj);
-	free(sess);
+    if (sess == NULL) return;
+    sess->sch->imp->mthd_signsess_d3_free(sess->obj);
+    free(sess);
 }
 
 
 VrfySessionD3 *VrfySessionD3_new(KeyPair *keypair, Scheme *sch)
 {
-	if (sch == NULL) return NULL;
-	VrfySessionD3 *ret = (VrfySessionD3*)malloc(sizeof(VrfySessionD3));
-	ret->sch = sch;
-	void *keyobj = keypair->obj;
-	void *obj = sch->imp->mthd_vrfysess_d3_new(keyobj);
-	if (obj == NULL) goto err;
-	ret->obj = obj;
-	return ret;
+    if (sch == NULL) return NULL;
+    VrfySessionD3 *ret = (VrfySessionD3*)malloc(sizeof(VrfySessionD3));
+    ret->sch = sch;
+    void *keyobj = keypair->obj;
+    void *obj = sch->imp->mthd_vrfysess_d3_new(keyobj);
+    if (obj == NULL) goto err;
+    ret->obj = obj;
+    return ret;
 
 err:
-	VrfySessionD3_free(ret);
-	return NULL;
+    VrfySessionD3_free(ret);
+    return NULL;
 }
 
 
 void VrfySessionD3_free(VrfySessionD3 *sess)
 {
-	if (sess == NULL) return;
-	sess->sch->imp->mthd_vrfysess_d3_free(sess->obj);
-	free(sess);
+    if (sess == NULL) return;
+    sess->sch->imp->mthd_vrfysess_d3_free(sess->obj);
+    free(sess);
 }
 
 
 int Scheme_D3_sign_offline(Scheme *sch, KeyPair *keypair,
-        SignSessionD3 *sess, Signature *sig)
+    SignSessionD3 *sess, Signature *sig)
 {
     if (sch == NULL) return -1;
     if (keypair == NULL) return -1;
@@ -164,8 +164,8 @@ int Scheme_D3_sign_offline(Scheme *sch, KeyPair *keypair,
 
 
 int Scheme_D3_sign_online(Scheme *sch, KeyPair *keypair,
-        SignSessionD3 *sess, Signature *sig,
-        const unsigned char *msg, int msglen)
+    SignSessionD3 *sess, Signature *sig,
+    const unsigned char *msg, int msglen)
 {
     if (sch == NULL) return -1;
     if (keypair == NULL) return -1;
@@ -173,24 +173,24 @@ int Scheme_D3_sign_online(Scheme *sch, KeyPair *keypair,
     if (sig == NULL) return -1;
     if (msg == NULL) return -1;
     return sch->imp->mthd_d3_sign_online(
-			keypair->obj, sess->obj,
-			sig->obj, msg, msglen);
+        keypair->obj, sess->obj,
+        sig->obj, msg, msglen);
 }
 
 
 int Scheme_D3_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD3 *sess,
-	Signature *sig, const unsigned char *msg, int msglen)
+    Signature *sig, const unsigned char *msg, int msglen)
 {
     if (sch == NULL) return -1;
     if (keypair == NULL) return -1;
     if (sess == NULL) return -1;
     return sch->imp->mthd_d3_vrfy_offline(keypair->obj, sess->obj,
-			sig->obj, msg, msglen);
+        sig->obj, msg, msglen);
 }
 
 
 int Scheme_D3_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD3 *sess,
-        Signature *sig)
+    Signature *sig)
 {
     if (sch == NULL) return -1;
     if (keypair == NULL) return -1;
@@ -208,100 +208,310 @@ int Scheme_D3_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD3 *sess,
 
 
 
+SignSessionD3b *SignSessionD3b_new(KeyPair *keypair, Scheme *sch)
+{
+    if (keypair == NULL) return NULL;
+    if (sch == NULL) return NULL;
+    SignSessionD3b *ret = (SignSessionD3b*)malloc(sizeof(SignSessionD3b));
+    ret->sch = sch;
+    void *obj = sch->imp->mthd_signsess_d3b_new(keypair->obj);
+    if (obj == NULL) goto err;
+    ret->obj = obj;
+    return ret;
+err:
+    SignSessionD3b_free(ret);
+    return NULL;
+}
+
+
+void SignSessionD3b_free(SignSessionD3b *sess)
+{
+    if (sess == NULL) return;
+    sess->sch->imp->mthd_signsess_d3b_free(sess->obj);
+    free(sess);
+}
+
+
+VrfySessionD3b *VrfySessionD3b_new(KeyPair *keypair, Scheme *sch)
+{
+    if (sch == NULL) return NULL;
+    VrfySessionD3b *ret = (VrfySessionD3b*)malloc(sizeof(VrfySessionD3b));
+    ret->sch = sch;
+    void *keyobj = keypair->obj;
+    void *obj = sch->imp->mthd_vrfysess_d3b_new(keyobj);
+    if (obj == NULL) goto err;
+    ret->obj = obj;
+    return ret;
+
+err:
+    VrfySessionD3b_free(ret);
+    return NULL;
+}
+
+
+void VrfySessionD3b_free(VrfySessionD3b *sess)
+{
+    if (sess == NULL) return;
+    sess->sch->imp->mthd_vrfysess_d3b_free(sess->obj);
+    free(sess);
+}
+
+
+int Scheme_D3b_sign_offline(Scheme *sch, KeyPair *keypair,
+    SignSessionD3b *sess, Signature *sig)
+{
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    return sch->imp->mthd_d3b_sign_offline(keypair->obj, sess->obj, sig->obj);
+}
+
+
+int Scheme_D3b_sign_online(Scheme *sch, KeyPair *keypair,
+    SignSessionD3b *sess, Signature *sig,
+    const unsigned char *msg, int msglen)
+{
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    if (msg == NULL) return -1;
+    return sch->imp->mthd_d3b_sign_online(
+        keypair->obj, sess->obj,
+        sig->obj, msg, msglen);
+}
+
+
+int Scheme_D3b_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD3b *sess,
+    Signature *sig, const unsigned char *msg, int msglen)
+{
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    return sch->imp->mthd_d3b_vrfy_offline(keypair->obj, sess->obj,
+        sig->obj, msg, msglen);
+}
+
+
+int Scheme_D3b_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD3b *sess,
+    Signature *sig)
+{
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    return sch->imp->mthd_d3b_vrfy_online(keypair->obj, sess->obj, sig->obj);
+}
+
+
+
+
+
+
+
+
+
+
 SignSessionD2 *SignSessionD2_new(KeyPair *keypair, Scheme *sch)
 {
-	if (keypair == NULL) return NULL;
-	if (sch == NULL) return NULL;
-	SignSessionD2 *ret = (SignSessionD2*)malloc(sizeof(SignSessionD2));
-	ret->sch = sch;
-	void *obj = sch->imp->mthd_signsess_d2_new(keypair->obj);
-	if (obj == NULL) goto err;
-	ret->obj = obj;
-	return ret;
+    if (keypair == NULL) return NULL;
+    if (sch == NULL) return NULL;
+    SignSessionD2 *ret = (SignSessionD2*)malloc(sizeof(SignSessionD2));
+    ret->sch = sch;
+    void *obj = sch->imp->mthd_signsess_d2_new(keypair->obj);
+    if (obj == NULL) goto err;
+    ret->obj = obj;
+    return ret;
 err:
-	SignSessionD2_free(ret);
-	return NULL;
+    SignSessionD2_free(ret);
+    return NULL;
 }
 
 
 void SignSessionD2_free(SignSessionD2 *sess)
 {
-	if (sess == NULL) return;
-	sess->sch->imp->mthd_signsess_d2_free(sess->obj);
-	free(sess);
+    if (sess == NULL) return;
+    sess->sch->imp->mthd_signsess_d2_free(sess->obj);
+    free(sess);
 }
 
 
 VrfySessionD2 *VrfySessionD2_new(KeyPair *keypair, Scheme *sch)
 {
-	if (sch == NULL) return NULL;
-	VrfySessionD2 *ret = (VrfySessionD2*)malloc(sizeof(VrfySessionD2));
-	ret->sch = sch;
-	void *keyobj = keypair->obj;
-	void *obj = sch->imp->mthd_vrfysess_d2_new(keyobj);
-	if (obj == NULL) goto err;
-	ret->obj = obj;
-	return ret;
+    if (sch == NULL) return NULL;
+    VrfySessionD2 *ret = (VrfySessionD2*)malloc(sizeof(VrfySessionD2));
+    ret->sch = sch;
+    void *keyobj = keypair->obj;
+    void *obj = sch->imp->mthd_vrfysess_d2_new(keyobj);
+    if (obj == NULL) goto err;
+    ret->obj = obj;
+    return ret;
 
 err:
-	VrfySessionD2_free(ret);
-	return NULL;
+    VrfySessionD2_free(ret);
+    return NULL;
 }
 
 
 void VrfySessionD2_free(VrfySessionD2 *sess)
 {
-	if (sess == NULL) return;
-	sess->sch->imp->mthd_vrfysess_d2_free(sess->obj);
-	free(sess);
+    if (sess == NULL) return;
+    sess->sch->imp->mthd_vrfysess_d2_free(sess->obj);
+    free(sess);
 }
 
 
 int Scheme_D2_sign_offline(Scheme *sch, KeyPair *keypair,
-	SignSessionD2 *sess, Signature *sig)
+    SignSessionD2 *sess, Signature *sig)
 {
-	if (sch == NULL) return -1;
-	if (keypair == NULL) return -1;
-	if (sess == NULL) return -1;
-	if (sig == NULL) return -1;
-	return sch->imp->mthd_d2_sign_offline(keypair->obj, sess->obj, sig->obj);
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    return sch->imp->mthd_d2_sign_offline(keypair->obj, sess->obj, sig->obj);
 }
 
 
 int Scheme_D2_sign_online(Scheme *sch, KeyPair *keypair,
-	SignSessionD2 *sess, Signature *sig,
-	const unsigned char *msg, int msglen)
+    SignSessionD2 *sess, Signature *sig,
+    const unsigned char *msg, int msglen)
 {
-	if (sch == NULL) return -1;
-	if (keypair == NULL) return -1;
-	if (sess == NULL) return -1;
-	if (sig == NULL) return -1;
-	if (msg == NULL) return -1;
-	return sch->imp->mthd_d2_sign_online(
-		keypair->obj, sess->obj,
-		sig->obj, msg, msglen);
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    if (msg == NULL) return -1;
+    return sch->imp->mthd_d2_sign_online(
+        keypair->obj, sess->obj,
+        sig->obj, msg, msglen);
 }
 
 
 int Scheme_D2_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD2 *sess,
-	Signature *sig)
+    Signature *sig)
 {
-	if (sch == NULL) return -1;
-	if (keypair == NULL) return -1;
-	if (sess == NULL) return -1;
-	return sch->imp->mthd_d2_vrfy_offline(keypair->obj, sess->obj,
-		sig->obj);
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    return sch->imp->mthd_d2_vrfy_offline(keypair->obj, sess->obj,
+        sig->obj);
 }
 
 
 int Scheme_D2_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD2 *sess,
-	Signature *sig, const unsigned char *msg, int msglen)
+    Signature *sig, const unsigned char *msg, int msglen)
 {
-	if (sch == NULL) return -1;
-	if (keypair == NULL) return -1;
-	if (sess == NULL) return -1;
-	if (sig == NULL) return -1;
-	return sch->imp->mthd_d2_vrfy_online(keypair->obj, sess->obj, sig->obj, msg, msglen);
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    return sch->imp->mthd_d2_vrfy_online(keypair->obj, sess->obj, sig->obj, msg, msglen);
+}
+
+
+
+
+
+
+
+
+
+
+SignSessionD2b *SignSessionD2b_new(KeyPair *keypair, Scheme *sch)
+{
+    if (keypair == NULL) return NULL;
+    if (sch == NULL) return NULL;
+    SignSessionD2b *ret = (SignSessionD2b*)malloc(sizeof(SignSessionD2b));
+    ret->sch = sch;
+    void *obj = sch->imp->mthd_signsess_d2b_new(keypair->obj);
+    if (obj == NULL) goto err;
+    ret->obj = obj;
+    return ret;
+err:
+    SignSessionD2b_free(ret);
+    return NULL;
+}
+
+
+void SignSessionD2b_free(SignSessionD2b *sess)
+{
+    if (sess == NULL) return;
+    sess->sch->imp->mthd_signsess_d2b_free(sess->obj);
+    free(sess);
+}
+
+
+VrfySessionD2b *VrfySessionD2b_new(KeyPair *keypair, Scheme *sch)
+{
+    if (sch == NULL) return NULL;
+    VrfySessionD2b *ret = (VrfySessionD2b*)malloc(sizeof(VrfySessionD2b));
+    ret->sch = sch;
+    void *keyobj = keypair->obj;
+    void *obj = sch->imp->mthd_vrfysess_d2b_new(keyobj);
+    if (obj == NULL) goto err;
+    ret->obj = obj;
+    return ret;
+
+err:
+    VrfySessionD2b_free(ret);
+    return NULL;
+}
+
+
+void VrfySessionD2b_free(VrfySessionD2b *sess)
+{
+    if (sess == NULL) return;
+    sess->sch->imp->mthd_vrfysess_d2b_free(sess->obj);
+    free(sess);
+}
+
+
+int Scheme_D2b_sign_offline(Scheme *sch, KeyPair *keypair,
+    SignSessionD2b *sess, Signature *sig)
+{
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    return sch->imp->mthd_d2b_sign_offline(keypair->obj, sess->obj, sig->obj);
+}
+
+
+int Scheme_D2b_sign_online(Scheme *sch, KeyPair *keypair,
+    SignSessionD2b *sess, Signature *sig,
+    const unsigned char *msg, int msglen)
+{
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    if (msg == NULL) return -1;
+    return sch->imp->mthd_d2b_sign_online(
+        keypair->obj, sess->obj,
+        sig->obj, msg, msglen);
+}
+
+
+int Scheme_D2b_vrfy_offline(Scheme *sch, KeyPair *keypair, VrfySessionD2b *sess,
+    Signature *sig)
+{
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    return sch->imp->mthd_d2b_vrfy_offline(keypair->obj, sess->obj,
+        sig->obj);
+}
+
+
+int Scheme_D2b_vrfy_online(Scheme *sch, KeyPair *keypair, VrfySessionD2b *sess,
+    Signature *sig, const unsigned char *msg, int msglen)
+{
+    if (sch == NULL) return -1;
+    if (keypair == NULL) return -1;
+    if (sess == NULL) return -1;
+    if (sig == NULL) return -1;
+    return sch->imp->mthd_d2b_vrfy_online(keypair->obj, sess->obj, sig->obj, msg, msglen);
 }
 
 
