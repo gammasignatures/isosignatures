@@ -912,6 +912,19 @@ int ECKCDSA_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsi
 
 
 
+typedef struct ECKCDSA_SignSessD2b ECKCDSA_SignSessD2b;
+struct ECKCDSA_SignSessD2b
+{
+    BIGNUM*         r;
+    EC_POINT*       A;
+    unsigned char*  A_bytes;
+    unsigned char*  e_bytes;
+    unsigned char*  ed_bytes;
+    BIGNUM*         ed;
+    BIGNUM*			red;
+};
+
+
 typedef struct ECKCDSA_VrfySessD2b ECKCDSA_VrfySessD2b;
 struct ECKCDSA_VrfySessD2b
 
