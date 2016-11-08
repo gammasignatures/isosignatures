@@ -197,8 +197,6 @@ void ECDSA_keypair_free(void *obj)
     ECDSA_KeyPair *keypair = (ECDSA_KeyPair*)obj;
     EC_KEY_free(keypair->eckey);
     BN_free(keypair->group_order);
-    BN_free(keypair->sk);
-    EC_POINT_free(keypair->PK);
     free(keypair);
 }
 
@@ -887,6 +885,21 @@ int ECDSA_d2_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsign
 
 
 
+void ECDSA_d2b_signsess_free(void* obj)
+{
+	if (obj == NULL) return;
+	ECDSA_SignSessD2b *sess = (ECDSA_SignSessD2b*)obj;
+	BN_free(sess->r);
+	BN_free(sess->r_inv);
+	EC_POINT_free(sess->A);
+	BN_free(sess->dx);
+	free(sess->e_bytes);
+	BN_free(sess->e);
+	BN_free(sess->edx);
+	free(sess);
+}
+
+
 void *ECDSA_d2b_signsess_new(void *keyobj)
 {
 	ECDSA_KeyPair *keypair = (ECDSA_KeyPair*)keyobj;
@@ -911,17 +924,17 @@ err:
 }
 
 
-void ECDSA_d2b_signsess_free(void* obj)
+void ECDSA_d2b_vrfysess_free(void* obj)
 {
 	if (obj == NULL) return;
-	ECDSA_SignSessD2b *sess = (ECDSA_SignSessD2b*)obj;
-	BN_free(sess->r);
-	BN_free(sess->r_inv);
-	EC_POINT_free(sess->A);
-	BN_free(sess->dx);
+	ECDSA_VrfySessD2b *sess = (ECDSA_VrfySessD2b*)obj;
 	free(sess->e_bytes);
 	BN_free(sess->e);
-	BN_free(sess->edx);
+	BN_free(sess->z_inv);
+	EC_POINT_free(sess->A);
+	BN_free(sess->d0);
+	BN_free(sess->z_inv_e);
+	BN_free(sess->z_inv_d);
 	free(sess);
 }
 
@@ -945,21 +958,6 @@ void *ECDSA_d2b_vrfysess_new(void *keyobj)
 err:
 	ECDSA_d2b_vrfysess_free(sess);
 	return NULL;
-}
-
-
-void ECDSA_d2b_vrfysess_free(void* obj)
-{
-	if (obj == NULL) return;
-	ECDSA_VrfySessD2b *sess = (ECDSA_VrfySessD2b*)obj;
-	free(sess->e_bytes);
-	BN_free(sess->e);
-	BN_free(sess->z_inv);
-	EC_POINT_free(sess->A);
-	BN_free(sess->d0);
-	BN_free(sess->z_inv_e);
-	BN_free(sess->z_inv_d);
-	free(sess);
 }
 
 
