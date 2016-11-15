@@ -836,6 +836,8 @@ int testDeploy0(int verbose, int schid, int bitlen_sec,
     {
         keypair[i] = KeyPair_new(sch, bitlen_sec);
         assert(keypair[i] != NULL);
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret != NULL);
     }
     SignSessionD0 ***signsess = calloc(user_count, sizeof(SignSessionD0**));
     for (i = 0;i < user_count;++i)
