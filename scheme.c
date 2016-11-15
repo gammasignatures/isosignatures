@@ -108,6 +108,8 @@ SignSessionD3 *SignSessionD3_new(KeyPair *keypair, Scheme *sch)
     if (keypair == NULL) return NULL;
     if (sch == NULL) return NULL;
     SignSessionD3 *ret = (SignSessionD3*)malloc(sizeof(SignSessionD3));
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(SignSessionD3));
     ret->sch = sch;
     void *obj = sch->imp->mthd_signsess_d3_new(keypair->obj);
     if (obj == NULL) goto err;
@@ -131,6 +133,8 @@ VrfySessionD3 *VrfySessionD3_new(KeyPair *keypair, Scheme *sch)
 {
     if (sch == NULL) return NULL;
     VrfySessionD3 *ret = (VrfySessionD3*)malloc(sizeof(VrfySessionD3));
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(VrfySessionD3));
     ret->sch = sch;
     void *keyobj = keypair->obj;
     void *obj = sch->imp->mthd_vrfysess_d3_new(keyobj);
@@ -213,6 +217,8 @@ SignSessionD3b *SignSessionD3b_new(KeyPair *keypair, Scheme *sch)
     if (keypair == NULL) return NULL;
     if (sch == NULL) return NULL;
     SignSessionD3b *ret = (SignSessionD3b*)malloc(sizeof(SignSessionD3b));
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(SignSessionD3b));
     ret->sch = sch;
     void *obj = sch->imp->mthd_signsess_d3b_new(keypair->obj);
     if (obj == NULL) goto err;
@@ -236,6 +242,8 @@ VrfySessionD3b *VrfySessionD3b_new(KeyPair *keypair, Scheme *sch)
 {
     if (sch == NULL) return NULL;
     VrfySessionD3b *ret = (VrfySessionD3b*)malloc(sizeof(VrfySessionD3b));
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(VrfySessionD3b));
     ret->sch = sch;
     void *keyobj = keypair->obj;
     void *obj = sch->imp->mthd_vrfysess_d3b_new(keyobj);
@@ -318,6 +326,8 @@ SignSessionD2 *SignSessionD2_new(KeyPair *keypair, Scheme *sch)
     if (keypair == NULL) return NULL;
     if (sch == NULL) return NULL;
     SignSessionD2 *ret = (SignSessionD2*)malloc(sizeof(SignSessionD2));
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(SignSessionD2));
     ret->sch = sch;
     void *obj = sch->imp->mthd_signsess_d2_new(keypair->obj);
     if (obj == NULL) goto err;
@@ -341,6 +351,8 @@ VrfySessionD2 *VrfySessionD2_new(KeyPair *keypair, Scheme *sch)
 {
     if (sch == NULL) return NULL;
     VrfySessionD2 *ret = (VrfySessionD2*)malloc(sizeof(VrfySessionD2));
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(VrfySessionD2));
     ret->sch = sch;
     void *keyobj = keypair->obj;
     void *obj = sch->imp->mthd_vrfysess_d2_new(keyobj);
@@ -423,6 +435,8 @@ SignSessionD2b *SignSessionD2b_new(KeyPair *keypair, Scheme *sch)
     if (keypair == NULL) return NULL;
     if (sch == NULL) return NULL;
     SignSessionD2b *ret = (SignSessionD2b*)malloc(sizeof(SignSessionD2b));
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(SignSessionD2b));
     ret->sch = sch;
     void *obj = sch->imp->mthd_signsess_d2b_new(keypair->obj);
     if (obj == NULL) goto err;
@@ -446,6 +460,8 @@ VrfySessionD2b *VrfySessionD2b_new(KeyPair *keypair, Scheme *sch)
 {
     if (sch == NULL) return NULL;
     VrfySessionD2b *ret = (VrfySessionD2b*)malloc(sizeof(VrfySessionD2b));
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(VrfySessionD2b));
     ret->sch = sch;
     void *keyobj = keypair->obj;
     void *obj = sch->imp->mthd_vrfysess_d2b_new(keyobj);
@@ -528,7 +544,9 @@ SignSessionD1 *SignSessionD1_new(KeyPair *keypair, Scheme *sch)
 	if (keypair == NULL) return NULL;
 	if (sch == NULL) return NULL;
 	SignSessionD1 *ret = (SignSessionD1*)malloc(sizeof(SignSessionD1));
-	ret->sch = sch;
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(SignSessionD1));
+    ret->sch = sch;
 	void *obj = sch->imp->mthd_signsess_d1_new(keypair->obj);
 	if (obj == NULL) goto err;
 	ret->obj = obj;
@@ -551,7 +569,9 @@ VrfySessionD1 *VrfySessionD1_new(KeyPair *keypair, Scheme *sch)
 {
 	if (sch == NULL) return NULL;
 	VrfySessionD1 *ret = (VrfySessionD1*)malloc(sizeof(VrfySessionD1));
-	ret->sch = sch;
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(VrfySessionD1));
+    ret->sch = sch;
 	void *keyobj = keypair->obj;
 	void *obj = sch->imp->mthd_vrfysess_d1_new(keyobj);
 	if (obj == NULL) goto err;
@@ -631,7 +651,9 @@ SignSessionD0 *SignSessionD0_new(KeyPair *keypair, Scheme *sch)
 	if (keypair == NULL) return NULL;
 	if (sch == NULL) return NULL;
 	SignSessionD0 *ret = (SignSessionD0*)malloc(sizeof(SignSessionD0));
-	ret->sch = sch;
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(SignSessionD0));
+    ret->sch = sch;
 	void *obj = sch->imp->mthd_signsess_d0_new(keypair->obj);
 	if (obj == NULL) goto err;
 	ret->obj = obj;
@@ -654,7 +676,9 @@ VrfySessionD0 *VrfySessionD0_new(KeyPair *keypair, Scheme *sch)
 {
 	if (sch == NULL) return NULL;
 	VrfySessionD0 *ret = (VrfySessionD0*)malloc(sizeof(VrfySessionD0));
-	ret->sch = sch;
+    if (ret == NULL) goto err;
+    memset(ret, 0, sizeof(VrfySessionD0));
+    ret->sch = sch;
 	void *keyobj = keypair->obj;
 	void *obj = sch->imp->mthd_vrfysess_d0_new(keyobj);
 	if (obj == NULL) goto err;
