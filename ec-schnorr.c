@@ -299,7 +299,7 @@ int ECSNOR_d0_sign(void *keyobj, void *sessobj, void *sigobj,
     memcpy(sess->A_bytes_m + keys->bytelen_point, msg, msglen);
 
     /* Compute f_bytes = H(A||m) */
-    PRG(sess->A_bytes_m, keys->bytelen_point+msglen, sess->e_bytes, keys->bytelen_go);
+    PRG(sess->A_bytes_m, keys->bytelen_point+msglen, sess->f_bytes, keys->bytelen_go);
 
     /* Convert f_bytes to f */
     BN_bin2bn(sess->f_bytes, keys->bytelen_go, sig->f);
