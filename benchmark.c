@@ -907,7 +907,7 @@ int testDeploy0(int verbose, int schid, int bitlen_sec,
         for (j = 0;j < sign_count;j++)
         {
             Scheme_D0_vrfy(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
-            assert(ret = 0);
+            assert(ret == 0);
         }
 	}
     timerstop();
