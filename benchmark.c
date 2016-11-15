@@ -855,7 +855,7 @@ int testDeploy0(int verbose, int schid, int bitlen_sec,
         assert(vrfysess[i] != NULL);
         for (j = 0;j < sign_count;++j)
         {
-            vrfysess[i][j] = vrfysessionD0_new(keypair[i], sch);
+            vrfysess[i][j] = VrfySessionD0_new(keypair[i], sch);
             assert(vrfysess[i][j] != NULL);
         }
     }
