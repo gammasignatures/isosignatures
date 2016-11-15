@@ -262,7 +262,8 @@ void ECCDSA1_d3_vrfysess_free(void* obj)
 	EC_POINT_free(sess->edX);
 	EC_POINT_free(sess->zP);
 	EC_POINT_free(sess->A);
-	free(sess->d0_bytes);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
 	free(sess);
 }
 
@@ -281,7 +282,8 @@ void *ECCDSA1_d3_vrfysess_new(void *keyobj)
 	flag = sess->edX = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
 	flag = sess->zP = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	return sess;
 err:
 	ECCDSA1_d3_vrfysess_free(sess);
@@ -441,7 +443,8 @@ struct ECCDSA1_SignSessD3b
 {
 	BIGNUM*         r;
 	EC_POINT*       A;
-	unsigned char*  e_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  e_bytes;
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	BIGNUM*			xed;
@@ -456,7 +459,8 @@ struct ECCDSA1_VrfySessD3b
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	EC_POINT*       A;
-	unsigned char*  d0_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
 };
 
 
@@ -466,7 +470,8 @@ void ECCDSA1_d3b_signsess_free(void* obj)
 	ECCDSA1_SignSessD3b *sess = (ECCDSA1_SignSessD3b*)obj;
 	BN_free(sess->r);
 	EC_POINT_free(sess->A);
-	free(sess->e_bytes);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	BN_free(sess->xed);
@@ -486,7 +491,8 @@ void *ECCDSA1_d3b_signsess_new(void *keyobj)
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->xed = BN_new();if (flag == NULL) goto err;
@@ -505,7 +511,8 @@ void ECCDSA1_d3b_vrfysess_free(void* obj)
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	EC_POINT_free(sess->A);
-	free(sess->d0_bytes);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
 	free(sess);
 }
 
@@ -522,7 +529,8 @@ void *ECCDSA1_d3b_vrfysess_new(void *keyobj)
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	return sess;
 err:
 	ECCDSA1_d3b_vrfysess_free(sess);
@@ -675,7 +683,8 @@ struct ECCDSA1_SignSessD2
 {
 	BIGNUM*         r;
 	EC_POINT*       A;
-	unsigned char*  e_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  e_bytes;
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	BIGNUM*			xed;
@@ -689,7 +698,8 @@ struct ECCDSA1_VrfySessD2
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	EC_POINT*       A;
-	unsigned char*  d0_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
 };
 
 
@@ -699,7 +709,8 @@ void ECCDSA1_d2_signsess_free(void* obj)
 	ECCDSA1_SignSessD2 *sess = (ECCDSA1_SignSessD2*)obj;
 	BN_free(sess->r);
 	EC_POINT_free(sess->A);
-	free(sess->e_bytes);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	BN_free(sess->xed);
@@ -719,7 +730,8 @@ void *ECCDSA1_d2_signsess_new(void *keyobj)
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->xed = BN_new();if (flag == NULL) goto err;
@@ -738,7 +750,8 @@ void ECCDSA1_d2_vrfysess_free(void* obj)
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	EC_POINT_free(sess->A);
-	free(sess->d0_bytes);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
 	free(sess);
 }
 
@@ -755,7 +768,8 @@ void *ECCDSA1_d2_vrfysess_new(void *keyobj)
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	return sess;
 err:
 	ECCDSA1_d2_vrfysess_free(sess);
@@ -913,7 +927,8 @@ struct ECCDSA1_SignSessD2b
 {
 	BIGNUM*         r;
 	EC_POINT*       A;
-	unsigned char*  e_bytes;
+    unsigned char*  e_bytes;
+    unsigned char*  A_bytes;
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	BIGNUM*			xed;
@@ -928,7 +943,8 @@ struct ECCDSA1_VrfySessD2b
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	EC_POINT*       A;
-	unsigned char*  d0_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
 };
 
 
@@ -938,7 +954,8 @@ void ECCDSA1_d2b_signsess_free(void* obj)
 	ECCDSA1_SignSessD2b *sess = (ECCDSA1_SignSessD2b*)obj;
 	BN_free(sess->r);
 	EC_POINT_free(sess->A);
-	free(sess->e_bytes);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	BN_free(sess->xed);
@@ -958,7 +975,8 @@ void *ECCDSA1_d2b_signsess_new(void *keyobj)
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->xed = BN_new();if (flag == NULL) goto err;
@@ -977,7 +995,8 @@ void ECCDSA1_d2b_vrfysess_free(void* obj)
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	EC_POINT_free(sess->A);
-	free(sess->d0_bytes);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
 	free(sess);
 }
 
@@ -994,7 +1013,8 @@ void *ECCDSA1_d2b_vrfysess_new(void *keyobj)
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	return sess;
 err:
 	ECCDSA1_d2b_vrfysess_free(sess);
@@ -1151,7 +1171,8 @@ struct ECCDSA1_SignSessD1
 {
 	BIGNUM*         r;
 	EC_POINT*       A;
-	unsigned char*  e_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  e_bytes;
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	BIGNUM*			xed;
@@ -1165,7 +1186,8 @@ struct ECCDSA1_VrfySessD1
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	EC_POINT*       A;
-	unsigned char*  d0_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
 };
 
 
@@ -1176,7 +1198,8 @@ void ECCDSA1_d1_signsess_free(void* obj)
 	ECCDSA1_SignSessD1 *sess = (ECCDSA1_SignSessD1*)obj;
 	BN_free(sess->r);
 	EC_POINT_free(sess->A);
-	free(sess->e_bytes);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	BN_free(sess->xed);
@@ -1196,7 +1219,8 @@ void *ECCDSA1_d1_signsess_new(void *keyobj)
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->xed = BN_new();if (flag == NULL) goto err;
@@ -1215,7 +1239,8 @@ void ECCDSA1_d1_vrfysess_free(void* obj)
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	EC_POINT_free(sess->A);
-	free(sess->d0_bytes);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
 	free(sess);
 }
 
@@ -1232,7 +1257,8 @@ void *ECCDSA1_d1_vrfysess_new(void *keyobj)
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	return sess;
 err:
 	ECCDSA1_d1_vrfysess_free(sess);
@@ -1378,7 +1404,8 @@ struct ECCDSA1_SignSessD0
 {
 	BIGNUM*         r;
 	EC_POINT*       A;
-	unsigned char*  e_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  e_bytes;
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	BIGNUM*			xed;
@@ -1392,7 +1419,8 @@ struct ECCDSA1_VrfySessD0
 	unsigned char*  ed_bytes;
 	BIGNUM*         ed;
 	EC_POINT*       A;
-	unsigned char*  d0_bytes;
+    unsigned char*  A_bytes;
+    unsigned char*  d0_bytes;
 };
 
 
@@ -1402,7 +1430,8 @@ void ECCDSA1_d0_signsess_free(void* obj)
 	ECCDSA1_SignSessD0 *sess = (ECCDSA1_SignSessD0*)obj;
 	BN_free(sess->r);
 	EC_POINT_free(sess->A);
-	free(sess->e_bytes);
+    free(sess->A_bytes);
+    free(sess->e_bytes);
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	BN_free(sess->xed);
@@ -1422,7 +1451,8 @@ void *ECCDSA1_d0_signsess_new(void *keyobj)
 	void *flag = NULL;
 	flag = sess->r = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->e_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->xed = BN_new();if (flag == NULL) goto err;
@@ -1441,7 +1471,8 @@ void ECCDSA1_d0_vrfysess_free(void* obj)
 	free(sess->ed_bytes);
 	BN_free(sess->ed);
 	EC_POINT_free(sess->A);
-	free(sess->d0_bytes);
+    free(sess->A_bytes);
+    free(sess->d0_bytes);
 	free(sess);
 }
 
@@ -1458,7 +1489,8 @@ void *ECCDSA1_d0_vrfysess_new(void *keyobj)
 	flag = sess->ed_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	flag = sess->ed = BN_new();if (flag == NULL) goto err;
 	flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-	flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->A_bytes = malloc(keypair->bytelen_point);if (flag == NULL) goto err;
+    flag = sess->d0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
 	return sess;
 err:
 	ECCDSA1_d0_vrfysess_free(sess);
