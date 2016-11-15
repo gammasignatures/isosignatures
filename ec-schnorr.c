@@ -33,29 +33,6 @@ struct ECSNOR_Sig
 };
 
 
-typedef struct ECSNOR_SignSessD0 ECSNOR_SignSessD0;
-struct ECSNOR_SignSessD0
-{
-    BIGNUM*         r;
-    EC_POINT*       A;
-    unsigned char*  A_bytes_m;
-    BIGNUM*			fx;
-    unsigned char*  f_bytes;
-};
-
-
-typedef struct ECSNOR_VrfySessD0 ECSNOR_VrfySessD0;
-struct ECSNOR_VrfySessD0
-{
-    unsigned char*  A_bytes_m;
-    unsigned char*  f0_bytes;
-    BIGNUM*         neg_f;
-    BIGNUM*			f0;
-    EC_POINT*       A;
-};
-
-
-
 
 void ECSNOR_keypair_free(void *obj)
 {
@@ -202,6 +179,232 @@ int ECSNOR_sig_encode(void *obj, unsigned char *buf)
 
 
 
+typedef struct ECSNOR_SignSessD1 ECSNOR_SignSessD1;
+struct ECSNOR_SignSessD1
+{
+    BIGNUM*         r;
+    EC_POINT*       A;
+    unsigned char*  A_bytes_m;
+    BIGNUM*			fx;
+    unsigned char*  f_bytes;
+};
+
+
+typedef struct ECSNOR_VrfySessD1 ECSNOR_VrfySessD1;
+struct ECSNOR_VrfySessD1
+{
+    unsigned char*  A_bytes_m;
+    unsigned char*  f0_bytes;
+    BIGNUM*         neg_f;
+    BIGNUM*			f0;
+    EC_POINT*       A;
+};
+
+
+void ECSNOR_d1_signsess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECSNOR_SignSessD1 *sess = (ECSNOR_SignSessD1*)obj;
+    BN_free(sess->r);
+    EC_POINT_free(sess->A);
+    BN_free(sess->fx);
+    free(sess->f_bytes);
+    free(sess->A_bytes_m);
+    free(sess);
+}
+
+
+void *ECSNOR_d1_signsess_new(void *keyobj)
+{
+    ECSNOR_KeyPair *keypair = (ECSNOR_KeyPair*)keyobj;
+
+    ECSNOR_SignSessD1 *sess = malloc(sizeof(ECSNOR_SignSessD1));
+    if (sess == NULL) return NULL;
+
+    memset(sess, 0, sizeof(ECSNOR_SignSessD1));
+
+    void *flag = NULL;
+    flag = sess->r = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    flag = sess->A_bytes_m = malloc(keypair->bytelen_point + 1024);if (flag == NULL) goto err;
+    flag = sess->fx = BN_new();if (flag == NULL) goto err;
+    flag = sess->f_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    return sess;
+err:
+    ECSNOR_d1_signsess_free(sess);
+    return NULL;
+}
+
+
+void ECSNOR_d1_vrfysess_free(void* obj)
+{
+    if (obj == NULL) return;
+    ECSNOR_VrfySessD1 *sess = (ECSNOR_VrfySessD1*)obj;
+    free(sess->A_bytes_m);
+    free(sess->f0_bytes);
+    BN_free(sess->neg_f);
+    BN_free(sess->f0);
+    EC_POINT_free(sess->A);
+    free(sess);
+}
+
+
+void *ECSNOR_d1_vrfysess_new(void *keyobj)
+{
+    ECSNOR_KeyPair *keypair = (ECSNOR_KeyPair*)keyobj;
+    ECSNOR_VrfySessD1 *sess = malloc(sizeof(ECSNOR_VrfySessD1));
+    if (sess == NULL) return NULL;
+    memset(sess, 0, sizeof(ECSNOR_VrfySessD1));
+
+    void *flag = NULL;
+    flag = sess->A_bytes_m = malloc(keypair->bytelen_point + 1024);if (flag == NULL) goto err;
+    flag = sess->f0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
+    flag = sess->neg_f = BN_new();if (flag == NULL) goto err;
+    flag = sess->f0 = BN_new();if (flag == NULL) goto err;
+    flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
+    return sess;
+err:
+    ECSNOR_d1_vrfysess_free(sess);
+    return NULL;
+}
+
+
+int ECSNOR_d1_sign_offline(void *keyobj, void *sessobj, void *sigobj)
+{
+    /* Cast objects. */
+    ECSNOR_KeyPair *keys = (ECSNOR_KeyPair*)keyobj;
+    ECSNOR_SignSessD1 *sess = (ECSNOR_SignSessD1*)sessobj;
+    ECSNOR_Sig *sig = (ECSNOR_Sig*)sigobj;
+    int ret;
+
+    /* Pick r */
+    ret = BN_rand_range(sess->r, keys->group_order);
+    assert(ret == 1);
+
+    /* Compute A = rP */
+    ret = EC_POINT_mul(keys->group, sess->A, sess->r, NULL, NULL, bnctx);
+    assert(ret == 1);
+
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes_m, ret, bnctx);
+
+    return 0;
+}
+
+
+int ECSNOR_d1_sign_online(void *keyobj, void *sessobj, void *sigobj,
+    const unsigned char *msg, int msglen)
+{
+    /* Cast objects. */
+    ECSNOR_KeyPair *keys = (ECSNOR_KeyPair*)keyobj;
+    ECSNOR_SignSessD1 *sess = (ECSNOR_SignSessD1*)sessobj;
+    ECSNOR_Sig *sig = (ECSNOR_Sig*)sigobj;
+    int ret;
+
+    /* Get A||m */
+    memcpy(sess->A_bytes_m + keys->bytelen_point, msg, msglen);
+
+    /* Compute f_bytes = H(A||m) */
+    PRG(sess->A_bytes_m, keys->bytelen_point + msglen, sess->f_bytes, keys->bytelen_go);
+
+    /* Convert f_bytes to f */
+    BN_bin2bn(sess->f_bytes, keys->bytelen_go, sig->f);
+
+    /* Compute fx */
+    BN_mod_mul(sess->fx, sig->f, keys->sk, keys->group_order, bnctx);
+
+    /* Compute z=r+fx */
+    ret = BN_mod_add(sig->z, sess->r, sess->fx, keys->group_order, bnctx);
+    assert(ret == 1);
+
+    return 0;
+}
+
+
+int ECSNOR_d1_vrfy_offline(void *keyobj, void *sessobj)
+{
+    return 0;
+}
+
+int ECSNOR_d1_vrfy_online(void *keyobj, void *sessobj, void *sigobj, const unsigned char *msg, int msglen)
+{
+    /* Rename objects. */
+    ECSNOR_KeyPair *keys = (ECSNOR_KeyPair*)keyobj;
+    ECSNOR_VrfySessD1 *sess = (ECSNOR_VrfySessD1*)sessobj;
+    ECSNOR_Sig *sig = (ECSNOR_Sig*)sigobj;
+    int ret;
+
+    /* Get -f */
+    BN_mod_sub(sess->neg_f, keys->group_order, sig->f, keys->group_order, bnctx);
+
+    /* Compute A = zP-fX  */
+    ret = EC_POINT_mul(keys->group, sess->A, sig->z, keys->PK, sess->neg_f, bnctx);
+
+    /* Convert A to A_bytes */
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        NULL, 0, bnctx);
+    ret = EC_POINT_point2oct(keys->group,
+        sess->A, POINT_CONVERSION_COMPRESSED,
+        sess->A_bytes_m, ret, bnctx);
+
+    /* Get A||m */
+    memcpy(sess->A_bytes_m + keys->bytelen_point, msg, msglen);
+
+    /* Compute f0_bytes = H(A||m) */
+    PRG(sess->A_bytes_m, keys->bytelen_point + msglen, sess->f0_bytes, keys->bytelen_go);
+
+    /* Convert f0_bytes to f0 */
+    BN_bin2bn(sess->f0_bytes, keys->bytelen_go, sess->f0);
+
+    /* Check f=f0? */
+    ret = BN_cmp(sig->f, sess->f0);
+    if (ret != 0) return -1;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct ECSNOR_SignSessD0 ECSNOR_SignSessD0;
+struct ECSNOR_SignSessD0
+{
+    BIGNUM*         r;
+    EC_POINT*       A;
+    unsigned char*  A_bytes_m;
+    BIGNUM*			fx;
+    unsigned char*  f_bytes;
+};
+
+
+typedef struct ECSNOR_VrfySessD0 ECSNOR_VrfySessD0;
+struct ECSNOR_VrfySessD0
+{
+    unsigned char*  A_bytes_m;
+    unsigned char*  f0_bytes;
+    BIGNUM*         neg_f;
+    BIGNUM*			f0;
+    EC_POINT*       A;
+};
+
+
 void ECSNOR_d0_signsess_free(void* obj)
 {
     if (obj == NULL) return;
@@ -227,7 +430,7 @@ void *ECSNOR_d0_signsess_new(void *keyobj)
     void *flag = NULL;
     flag = sess->r = BN_new();if (flag == NULL) goto err;
     flag = sess->A = EC_POINT_new(keypair->group);if (flag == NULL) goto err;
-    flag = sess->A_bytes_m = malloc(keypair->bytelen_point+1024);if (flag == NULL) goto err;
+    flag = sess->A_bytes_m = malloc(keypair->bytelen_point + 1024);if (flag == NULL) goto err;
     flag = sess->fx = BN_new();if (flag == NULL) goto err;
     flag = sess->f_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
     return sess;
@@ -258,7 +461,7 @@ void *ECSNOR_d0_vrfysess_new(void *keyobj)
     memset(sess, 0, sizeof(ECSNOR_VrfySessD0));
 
     void *flag = NULL;
-    flag = sess->A_bytes_m = malloc(keypair->bytelen_point+1024);if (flag == NULL) goto err;
+    flag = sess->A_bytes_m = malloc(keypair->bytelen_point + 1024);if (flag == NULL) goto err;
     flag = sess->f0_bytes = malloc(keypair->bytelen_go);if (flag == NULL) goto err;
     flag = sess->neg_f = BN_new();if (flag == NULL) goto err;
     flag = sess->f0 = BN_new();if (flag == NULL) goto err;
@@ -299,7 +502,7 @@ int ECSNOR_d0_sign(void *keyobj, void *sessobj, void *sigobj,
     memcpy(sess->A_bytes_m + keys->bytelen_point, msg, msglen);
 
     /* Compute f_bytes = H(A||m) */
-    PRG(sess->A_bytes_m, keys->bytelen_point+msglen, sess->f_bytes, keys->bytelen_go);
+    PRG(sess->A_bytes_m, keys->bytelen_point + msglen, sess->f_bytes, keys->bytelen_go);
 
     /* Convert f_bytes to f */
     BN_bin2bn(sess->f_bytes, keys->bytelen_go, sig->f);
@@ -328,7 +531,7 @@ int ECSNOR_d0_vrfy(void *keyobj, void *sessobj, void *sigobj, const unsigned cha
 
     /* Compute A = zP-fX  */
     ret = EC_POINT_mul(keys->group, sess->A, sig->z, keys->PK, sess->neg_f, bnctx);
-    
+
     /* Convert A to A_bytes */
     ret = EC_POINT_point2oct(keys->group,
         sess->A, POINT_CONVERSION_COMPRESSED,
@@ -409,14 +612,14 @@ SchemeMethods ECSNOR_Methods =
     .mthd_d2b_vrfy_offline = NULL,
     .mthd_d2b_vrfy_online = NULL,
 
-    .mthd_signsess_d1_new = NULL,
-    .mthd_signsess_d1_free = NULL,
-    .mthd_vrfysess_d1_new = NULL,
-    .mthd_vrfysess_d1_free = NULL,
-    .mthd_d1_sign_offline = NULL,
-    .mthd_d1_sign_online = NULL,
-    .mthd_d1_vrfy_offline = NULL,
-    .mthd_d1_vrfy_online = NULL,
+    .mthd_signsess_d1_new = ECSNOR_d1_signsess_new,
+    .mthd_signsess_d1_free = ECSNOR_d1_signsess_free,
+    .mthd_vrfysess_d1_new = ECSNOR_d1_vrfysess_new,
+    .mthd_vrfysess_d1_free = ECSNOR_d1_vrfysess_free,
+    .mthd_d1_sign_offline = ECSNOR_d1_sign_offline,
+    .mthd_d1_sign_online = ECSNOR_d1_sign_online,
+    .mthd_d1_vrfy_offline = ECSNOR_d1_vrfy_offline,
+    .mthd_d1_vrfy_online = ECSNOR_d1_vrfy_online,
 
     .mthd_signsess_d0_new = ECSNOR_d0_signsess_new,
     .mthd_signsess_d0_free = ECSNOR_d0_signsess_free,
