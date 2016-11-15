@@ -817,40 +817,102 @@ int testDeploy1(int verbose, int schid, int bitlen_sec,
 int testDeploy0(int verbose, int schid, int bitlen_sec,
 	int bitlen_msg,
 	int sign_count, int user_count,
-	clock_t *ret_sign, clock_t *ret_vrfy)
+	clock_t *ret_sign, clock_t *ret_vrfy, clock_t *ret_keygen)
 {
+	int ret,i,j;
 	Scheme *sch = get_scheme_by_id(schid);
 	if (sch == NULL) return -1;
-
-	int ret;
-
-	int i;
-	clock_t sign_total = 0;
-	clock_t vrfy_total = 0;
 
 	/* Warm up */
 	ret = testDeploy0OneUser(sign_count, sch,
 		bitlen_sec,
 		bitlen_msg,
-		&sign_total, &vrfy_total);
+		NULL, NULL);
 
 	assert(ret >= 0);
 
-	sign_total = 0;
-	vrfy_total = 0;
+    KeyPair **keypair = calloc(user_count,sizeof(KeyPair*));
+    for (i = 0;i < user_count;++i)
+    {
+        keypair[i] = KeyPair_new(sch, bitlen_sec);
+        assert(keypair[i] != NULL);
+    }
+    SignSessionD0 ***signsess = calloc(user_count, sizeof(SignSessionD0**));
+    for (i = 0;i < user_count;++i)
+    {
+        signsess[i] = calloc(sign_count, sizeof(SignSessionD0*));
+        assert(signsess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            signsess[i][j] = SignSessionD0_new(keypair[i], sch);
+            assert(signsess[i][j] != NULL);
+        }
+    }
+    VrfySessionD0 ***vrfysess = calloc(user_count, sizeof(VrfySessionD0**));
+    for (i = 0;i < user_count;++i)
+    {
+        vrfysess[i] = calloc(sign_count, sizeof(VrfySessionD0*));
+        assert(vrfysess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            vrfysess[i][j] = vrfysessionD0_new(keypair[i], sch);
+            assert(vrfysess[i][j] != NULL);
+        }
+    }
+    Signature ***sig = calloc(user_count, sizeof(Signature**));
+    for (i = 0;i < user_count;++i)
+    {
+        sig[i] = calloc(sign_count, sizeof(Signature*));
+        assert(sig[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            sig[i][j] = Signature_new(keypair[i],sch);
+            assert(sig[i][j] != NULL);
+        }
+    }
 
-	int VB = 8;
-	for (i = 1; i <= user_count; i++)
+    int msglen = bitlen_msg / 8;
+    unsigned char *msg = malloc(msglen);
+    assert(msg != NULL);
+
+    /* Gen all keys */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    timerstop();
+    if (ret_keygen != NULL) *ret_keygen = getms();
+
+    /* Do all Signs */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D0_sign(sch, keypair[i], signsess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    if (ret_sign != NULL) *ret_sign = getms();
+
+    /* Do all Verifys */
+    timerstart();
+    for (i = 0; i < user_count; i++)
 	{
-		testDeploy0OneUser(sign_count, sch,
-			bitlen_sec,
-			bitlen_msg,
-			&sign_total, &vrfy_total);
+        for (j = 0;j < sign_count;j++)
+        {
+            Scheme_D0_vrfy(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            assert(ret = 0);
+        }
 	}
+    timerstop();
+    if (ret_vrfy != NULL) *ret_vrfy = getms();
 
-	*ret_sign = sign_total;
-	*ret_vrfy = vrfy_total;
-
-	free(sch);
+clean:
+    free(sch);
+    //A lot of things to clean
 	return 0;
 }

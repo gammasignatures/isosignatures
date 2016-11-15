@@ -195,7 +195,7 @@ int testDeploy1(int verbose, int schid, int bitlen_sec,
 int testDeploy0(int verbose, int schid, int bitlen_sec,
 	int bitlen_msg,
 	int sign_count, int user_count,
-	clock_t *ret_sign, clock_t *ret_vrfy);
+	clock_t *ret_sign, clock_t *ret_vrfy, clock_t *ret_keygen);
 
 
 const char* getnamebyschid(int schid);

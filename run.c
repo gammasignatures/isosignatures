@@ -242,18 +242,21 @@ int main(int argc, char **argv)
 	break;
 	default:
 	{
+        clock_t g_tot = 0;
 		clock_t s_tot = 0;
-		clock_t v_tot = 0;
+        clock_t v_tot = 0;
 		testDeploy0(verbose, sch_id, bitlen_sec,
 			bitlen_sec,
 			sigcount, usrcount,
-			&s_tot, &v_tot);
+			&s_tot, &v_tot, &g_tot);
 
 		printf("\ndeployment=%d, sessionCount=%d\n"
+            "KeyGen      : %d\n"
 			"Sign        : %d\n"
 			"Vrfy        : %d\n",
             0,
 			sigcount*usrcount,
+            (int)g_tot,
 			(int)s_tot,
 			(int)v_tot);
 	}
