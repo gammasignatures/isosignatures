@@ -530,10 +530,13 @@ static Scheme * get_scheme_by_id(int schid)
     case SCHID_EC_RDSA:
         sch = Scheme_new(&ECRDSA_Methods);
         break;
+    case SCHID_EC_CDSA_I:
+        sch = Scheme_new(&ECCDSA1_Methods);
+        break;
     case SCHID_EC_CDSA_II:
         sch = Scheme_new(&ECCDSA2_Methods);
         break;
-	case SCHID_EC_KCDSA:
+    case SCHID_EC_KCDSA:
 		sch = Scheme_new(&ECKCDSA_Methods);
         break;
 	case SCHID_EC_DSA:

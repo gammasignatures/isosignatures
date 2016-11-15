@@ -90,6 +90,7 @@ struct SchemeMethods
 extern SchemeMethods ECDSA_Methods;
 extern SchemeMethods ECRDSA_Methods;
 extern SchemeMethods ECKCDSA_Methods;
+extern SchemeMethods ECCDSA1_Methods;
 extern SchemeMethods ECCDSA2_Methods;
 
 
