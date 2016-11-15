@@ -537,9 +537,12 @@ static Scheme * get_scheme_by_id(int schid)
         sch = Scheme_new(&ECCDSA2_Methods);
         break;
     case SCHID_EC_KCDSA:
-		sch = Scheme_new(&ECKCDSA_Methods);
+        sch = Scheme_new(&ECKCDSA_Methods);
         break;
-	case SCHID_EC_DSA:
+    case SCHID_EC_SCHNORR:
+        sch = Scheme_new(&ECSNOR_Methods);
+        break;
+    case SCHID_EC_DSA:
 	default:
 		sch = Scheme_new(&ECDSA_Methods);
     }

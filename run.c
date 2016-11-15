@@ -21,7 +21,7 @@ void print_usage(){
 "ARGUMENTS\n"
 "   scheme      Specifies the scheme to be tested.\n"
 "               scheme should be one of the following:\n"
-"               ecdsa/ecrdsa/eckcdsa/eccdsa1/eccdsa2. \n\n"
+"               ecdsa/ecrdsa/eckcdsa/ecsnor/eccdsa1/eccdsa2. \n\n"
 "   -deploy d   Which deployment to use?\n"
 "				Value d should be 0/10/20/21/30/31. (Default:30) \n\n"
 "   -sec n      Security parameter.\n"
@@ -109,6 +109,8 @@ int main(int argc, char **argv)
                 sch_id = SCHID_EC_CDSA_II;
             else if (strcmp(argv[i], "ecrdsa") == 0)
                 sch_id = SCHID_EC_RDSA;
+            else if (strcmp(argv[i], "ecsnor") == 0)
+                sch_id = SCHID_EC_SCHNORR;
             else
                 show_usage_and_exit_if(1);
         }

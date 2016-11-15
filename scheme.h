@@ -92,6 +92,7 @@ extern SchemeMethods ECRDSA_Methods;
 extern SchemeMethods ECKCDSA_Methods;
 extern SchemeMethods ECCDSA1_Methods;
 extern SchemeMethods ECCDSA2_Methods;
+extern SchemeMethods ECSNOR_Methods;
 
 
 /* A structure to hold a scheme. */
