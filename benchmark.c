@@ -24,7 +24,7 @@ unsigned long long getus(){
 }
 
 
-int testDeploy3OneUser(int sign_count, Scheme* sch,
+int testD3OneUser(int sign_count, Scheme* sch,
     int bitlen_sec,
     int bitlen_msg,
     clock_t *s_tot, clock_t *son_tot,
@@ -110,7 +110,7 @@ int testDeploy3OneUser(int sign_count, Scheme* sch,
 }
 
 
-int testDeploy3bOneUser(int sign_count, Scheme* sch,
+int testD3bOneUser(int sign_count, Scheme* sch,
     int bitlen_sec,
     int bitlen_msg,
     clock_t *s_tot, clock_t *son_tot,
@@ -196,7 +196,7 @@ int testDeploy3bOneUser(int sign_count, Scheme* sch,
 }
 
 
-int testDeploy2OneUser(int sign_count, Scheme* sch,
+int testD2OneUser(int sign_count, Scheme* sch,
     int bitlen_sec,
     int bitlen_msg,
     clock_t *s_tot, clock_t *son_tot,
@@ -282,7 +282,7 @@ int testDeploy2OneUser(int sign_count, Scheme* sch,
 }
 
 
-int testDeploy2bOneUser(int sign_count, Scheme* sch,
+int testD2bOneUser(int sign_count, Scheme* sch,
     int bitlen_sec,
     int bitlen_msg,
     clock_t *s_tot, clock_t *son_tot,
@@ -368,7 +368,7 @@ int testDeploy2bOneUser(int sign_count, Scheme* sch,
 }
 
 
-int testDeploy1OneUser(int sign_count, Scheme* sch,
+int testD1OneUser(int sign_count, Scheme* sch,
 	int bitlen_sec,
 	int bitlen_msg,
 	clock_t *s_tot, clock_t *son_tot,
@@ -454,7 +454,7 @@ int testDeploy1OneUser(int sign_count, Scheme* sch,
 }
 
 
-int testDeploy0OneUser(int sign_count, Scheme* sch,
+int testD0OneUser(int sign_count, Scheme* sch,
 	int bitlen_sec,
 	int bitlen_msg,
 	clock_t *s_tot, clock_t *v_tot)
@@ -556,47 +556,135 @@ int testDeploy3(int verbose, int schid, int bitlen_sec,
     clock_t *ret_sign_tot, clock_t *ret_sign_onl,
     clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
 {
+    int measured_sign_off;
+    int measured_sign_on;
+    int measured_vrfy_off;
+    int measured_vrfy_on;
+    int ret, i, j;
     Scheme *sch = get_scheme_by_id(schid);
     if (sch == NULL) return -1;
 
-    int ret;
-
-    int i;
-    clock_t sign_total = 0;
-    clock_t sign_online_total = 0;
-    clock_t vrfy_total = 0;
-    clock_t vrfy_online_total = 0;
-
     /* Warm up */
-    ret = testDeploy3OneUser(sign_count, sch,
-        bitlen_sec,
-        bitlen_msg,
-        &sign_total, &sign_online_total,
-        &vrfy_total, &vrfy_online_total);
+    ret = testD3OneUser(1, sch, bitlen_sec, bitlen_msg,
+        NULL, NULL, NULL, NULL);
 
     assert(ret >= 0);
 
-    sign_total = 0;
-    sign_online_total = 0;
-    vrfy_total = 0;
-    vrfy_online_total = 0;
-
-    int VB = 8;
-    for (i = 1; i <= user_count; i++)
+    KeyPair **keypair = calloc(user_count, sizeof(KeyPair*));
+    for (i = 0;i < user_count;++i)
     {
-        testDeploy3OneUser(sign_count, sch,
-            bitlen_sec,
-            bitlen_msg,
-            &sign_total, &sign_online_total,
-            &vrfy_total, &vrfy_online_total);
+        keypair[i] = KeyPair_new(sch, bitlen_sec);
+        assert(keypair[i] != NULL);
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    SignSessionD3 ***signsess = calloc(user_count, sizeof(SignSessionD3**));
+    for (i = 0;i < user_count;++i)
+    {
+        signsess[i] = calloc(sign_count, sizeof(SignSessionD3*));
+        assert(signsess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            signsess[i][j] = SignSessionD3_new(keypair[i], sch);
+            assert(signsess[i][j] != NULL);
+        }
+    }
+    VrfySessionD3 ***vrfysess = calloc(user_count, sizeof(VrfySessionD3**));
+    for (i = 0;i < user_count;++i)
+    {
+        vrfysess[i] = calloc(sign_count, sizeof(VrfySessionD3*));
+        assert(vrfysess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            vrfysess[i][j] = VrfySessionD3_new(keypair[i], sch);
+            assert(vrfysess[i][j] != NULL);
+        }
+    }
+    Signature ***sig = calloc(user_count, sizeof(Signature**));
+    for (i = 0;i < user_count;++i)
+    {
+        sig[i] = calloc(sign_count, sizeof(Signature*));
+        assert(sig[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            sig[i][j] = Signature_new(keypair[i], sch);
+            assert(sig[i][j] != NULL);
+        }
     }
 
-    *ret_sign_tot = sign_total;
-    *ret_sign_onl = sign_online_total;
-    *ret_vrfy_tot = vrfy_total;
-    *ret_vrfy_onl = vrfy_online_total;
+    int msglen = bitlen_msg / 8;
+    unsigned char *msg = malloc(msglen);
+    assert(msg != NULL);
 
+    /* Gen all keys */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    timerstop();
+
+    /* Do all Signs-offline */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D3_sign_offline(sch, keypair[i], signsess[i][j], sig[i][j]);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_sign_off = getms();
+
+    /* Do all Signs-online */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D3_sign_online(sch, keypair[i], signsess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_sign_on = getms();
+
+    /* Do all Verifys-offline */
+    timerstart();
+    for (i = 0; i < user_count; i++)
+    {
+        for (j = 0;j < sign_count;j++)
+        {
+            ret = Scheme_D3_vrfy_offline(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_vrfy_off = getms();
+
+    /* Do all Verifys-online */
+    timerstart();
+    for (i = 0; i < user_count; i++)
+    {
+        for (j = 0;j < sign_count;j++)
+        {
+            ret = Scheme_D3_vrfy_online(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_vrfy_on = getms();
+
+    if (ret_sign_tot != NULL) *ret_sign_tot = measured_sign_off + measured_sign_on;
+    if (ret_sign_onl != NULL) *ret_sign_onl = measured_sign_on;
+    if (ret_vrfy_tot != NULL) *ret_vrfy_tot = measured_vrfy_off + measured_vrfy_on;
+    if (ret_vrfy_onl != NULL) *ret_vrfy_onl = measured_vrfy_on;
+
+clean:
     free(sch);
+    //A lot of things to clean
     return 0;
 }
 
@@ -607,47 +695,135 @@ int testDeploy3b(int verbose, int schid, int bitlen_sec,
     clock_t *ret_sign_tot, clock_t *ret_sign_onl,
     clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
 {
+    int measured_sign_off;
+    int measured_sign_on;
+    int measured_vrfy_off;
+    int measured_vrfy_on;
+    int ret, i, j;
     Scheme *sch = get_scheme_by_id(schid);
     if (sch == NULL) return -1;
 
-    int ret;
-
-    int i;
-    clock_t sign_total = 0;
-    clock_t sign_online_total = 0;
-    clock_t vrfy_total = 0;
-    clock_t vrfy_online_total = 0;
-
     /* Warm up */
-    ret = testDeploy3bOneUser(sign_count, sch,
-        bitlen_sec,
-        bitlen_msg,
-        &sign_total, &sign_online_total,
-        &vrfy_total, &vrfy_online_total);
+    ret = testD3bOneUser(1, sch, bitlen_sec, bitlen_msg,
+        NULL, NULL, NULL, NULL);
 
     assert(ret >= 0);
 
-    sign_total = 0;
-    sign_online_total = 0;
-    vrfy_total = 0;
-    vrfy_online_total = 0;
-
-    int VB = 8;
-    for (i = 1; i <= user_count; i++)
+    KeyPair **keypair = calloc(user_count, sizeof(KeyPair*));
+    for (i = 0;i < user_count;++i)
     {
-        testDeploy3bOneUser(sign_count, sch,
-            bitlen_sec,
-            bitlen_msg,
-            &sign_total, &sign_online_total,
-            &vrfy_total, &vrfy_online_total);
+        keypair[i] = KeyPair_new(sch, bitlen_sec);
+        assert(keypair[i] != NULL);
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    SignSessionD3b ***signsess = calloc(user_count, sizeof(SignSessionD3b**));
+    for (i = 0;i < user_count;++i)
+    {
+        signsess[i] = calloc(sign_count, sizeof(SignSessionD3b*));
+        assert(signsess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            signsess[i][j] = SignSessionD3b_new(keypair[i], sch);
+            assert(signsess[i][j] != NULL);
+        }
+    }
+    VrfySessionD3b ***vrfysess = calloc(user_count, sizeof(VrfySessionD3b**));
+    for (i = 0;i < user_count;++i)
+    {
+        vrfysess[i] = calloc(sign_count, sizeof(VrfySessionD3b*));
+        assert(vrfysess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            vrfysess[i][j] = VrfySessionD3b_new(keypair[i], sch);
+            assert(vrfysess[i][j] != NULL);
+        }
+    }
+    Signature ***sig = calloc(user_count, sizeof(Signature**));
+    for (i = 0;i < user_count;++i)
+    {
+        sig[i] = calloc(sign_count, sizeof(Signature*));
+        assert(sig[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            sig[i][j] = Signature_new(keypair[i], sch);
+            assert(sig[i][j] != NULL);
+        }
     }
 
-    *ret_sign_tot = sign_total;
-    *ret_sign_onl = sign_online_total;
-    *ret_vrfy_tot = vrfy_total;
-    *ret_vrfy_onl = vrfy_online_total;
+    int msglen = bitlen_msg / 8;
+    unsigned char *msg = malloc(msglen);
+    assert(msg != NULL);
 
+    /* Gen all keys */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    timerstop();
+
+    /* Do all Signs-offline */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D3b_sign_offline(sch, keypair[i], signsess[i][j], sig[i][j]);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_sign_off = getms();
+
+    /* Do all Signs-online */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D3b_sign_online(sch, keypair[i], signsess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_sign_on = getms();
+
+    /* Do all Verifys-offline */
+    timerstart();
+    for (i = 0; i < user_count; i++)
+    {
+        for (j = 0;j < sign_count;j++)
+        {
+            ret = Scheme_D3b_vrfy_offline(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_vrfy_off = getms();
+
+    /* Do all Verifys-online */
+    timerstart();
+    for (i = 0; i < user_count; i++)
+    {
+        for (j = 0;j < sign_count;j++)
+        {
+            ret = Scheme_D3b_vrfy_online(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_vrfy_on = getms();
+
+    if (ret_sign_tot != NULL) *ret_sign_tot = measured_sign_off + measured_sign_on;
+    if (ret_sign_onl != NULL) *ret_sign_onl = measured_sign_on;
+    if (ret_vrfy_tot != NULL) *ret_vrfy_tot = measured_vrfy_off + measured_vrfy_on;
+    if (ret_vrfy_onl != NULL) *ret_vrfy_onl = measured_vrfy_on;
+
+clean:
     free(sch);
+    //A lot of things to clean
     return 0;
 }
 
@@ -667,47 +843,135 @@ int testDeploy2(int verbose, int schid, int bitlen_sec,
     clock_t *ret_sign_tot, clock_t *ret_sign_onl,
     clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
 {
+    int measured_sign_off;
+    int measured_sign_on;
+    int measured_vrfy_off;
+    int measured_vrfy_on;
+    int ret, i, j;
     Scheme *sch = get_scheme_by_id(schid);
     if (sch == NULL) return -1;
 
-    int ret;
-
-    int i;
-    clock_t sign_total = 0;
-    clock_t sign_online_total = 0;
-    clock_t vrfy_total = 0;
-    clock_t vrfy_online_total = 0;
-
     /* Warm up */
-    ret = testDeploy2OneUser(sign_count, sch,
-        bitlen_sec,
-        bitlen_msg,
-        &sign_total, &sign_online_total,
-        &vrfy_total, &vrfy_online_total);
+    ret = testD2OneUser(1, sch, bitlen_sec, bitlen_msg,
+        NULL, NULL, NULL, NULL);
 
     assert(ret >= 0);
 
-    sign_total = 0;
-    sign_online_total = 0;
-    vrfy_total = 0;
-    vrfy_online_total = 0;
-
-    int VB = 8;
-    for (i = 1; i <= user_count; i++)
+    KeyPair **keypair = calloc(user_count, sizeof(KeyPair*));
+    for (i = 0;i < user_count;++i)
     {
-        testDeploy2OneUser(sign_count, sch,
-            bitlen_sec,
-            bitlen_msg,
-            &sign_total, &sign_online_total,
-            &vrfy_total, &vrfy_online_total);
+        keypair[i] = KeyPair_new(sch, bitlen_sec);
+        assert(keypair[i] != NULL);
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    SignSessionD2 ***signsess = calloc(user_count, sizeof(SignSessionD2**));
+    for (i = 0;i < user_count;++i)
+    {
+        signsess[i] = calloc(sign_count, sizeof(SignSessionD2*));
+        assert(signsess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            signsess[i][j] = SignSessionD2_new(keypair[i], sch);
+            assert(signsess[i][j] != NULL);
+        }
+    }
+    VrfySessionD2 ***vrfysess = calloc(user_count, sizeof(VrfySessionD2**));
+    for (i = 0;i < user_count;++i)
+    {
+        vrfysess[i] = calloc(sign_count, sizeof(VrfySessionD2*));
+        assert(vrfysess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            vrfysess[i][j] = VrfySessionD2_new(keypair[i], sch);
+            assert(vrfysess[i][j] != NULL);
+        }
+    }
+    Signature ***sig = calloc(user_count, sizeof(Signature**));
+    for (i = 0;i < user_count;++i)
+    {
+        sig[i] = calloc(sign_count, sizeof(Signature*));
+        assert(sig[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            sig[i][j] = Signature_new(keypair[i], sch);
+            assert(sig[i][j] != NULL);
+        }
     }
 
-    *ret_sign_tot = sign_total;
-    *ret_sign_onl = sign_online_total;
-    *ret_vrfy_tot = vrfy_total;
-    *ret_vrfy_onl = vrfy_online_total;
+    int msglen = bitlen_msg / 8;
+    unsigned char *msg = malloc(msglen);
+    assert(msg != NULL);
 
+    /* Gen all keys */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    timerstop();
+
+    /* Do all Signs-offline */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D2_sign_offline(sch, keypair[i], signsess[i][j], sig[i][j]);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_sign_off = getms();
+
+    /* Do all Signs-online */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D2_sign_online(sch, keypair[i], signsess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_sign_on = getms();
+
+    /* Do all Verifys-offline */
+    timerstart();
+    for (i = 0; i < user_count; i++)
+    {
+        for (j = 0;j < sign_count;j++)
+        {
+            ret = Scheme_D2_vrfy_offline(sch, keypair[i], vrfysess[i][j], sig[i][j]);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_vrfy_off = getms();
+
+    /* Do all Verifys-online */
+    timerstart();
+    for (i = 0; i < user_count; i++)
+    {
+        for (j = 0;j < sign_count;j++)
+        {
+            ret = Scheme_D2_vrfy_online(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_vrfy_on = getms();
+
+    if (ret_sign_tot != NULL) *ret_sign_tot = measured_sign_off + measured_sign_on;
+    if (ret_sign_onl != NULL) *ret_sign_onl = measured_sign_on;
+    if (ret_vrfy_tot != NULL) *ret_vrfy_tot = measured_vrfy_off + measured_vrfy_on;
+    if (ret_vrfy_onl != NULL) *ret_vrfy_onl = measured_vrfy_on;
+
+clean:
     free(sch);
+    //A lot of things to clean
     return 0;
 }
 
@@ -718,47 +982,137 @@ int testDeploy2b(int verbose, int schid, int bitlen_sec,
     clock_t *ret_sign_tot, clock_t *ret_sign_onl,
     clock_t *ret_vrfy_tot, clock_t *ret_vrfy_onl)
 {
+    int measured_sign_off;
+    int measured_sign_on;
+    int measured_vrfy_off;
+    int measured_vrfy_on;
+    int ret, i, j;
     Scheme *sch = get_scheme_by_id(schid);
     if (sch == NULL) return -1;
 
-    int ret;
-
-    int i;
-    clock_t sign_total = 0;
-    clock_t sign_online_total = 0;
-    clock_t vrfy_total = 0;
-    clock_t vrfy_online_total = 0;
-
     /* Warm up */
-    ret = testDeploy2bOneUser(sign_count, sch,
+    ret = testD2bOneUser(1, sch,
         bitlen_sec,
         bitlen_msg,
-        &sign_total, &sign_online_total,
-        &vrfy_total, &vrfy_online_total);
+        NULL, NULL, NULL, NULL);
 
     assert(ret >= 0);
 
-    sign_total = 0;
-    sign_online_total = 0;
-    vrfy_total = 0;
-    vrfy_online_total = 0;
-
-    int VB = 8;
-    for (i = 1; i <= user_count; i++)
+    KeyPair **keypair = calloc(user_count, sizeof(KeyPair*));
+    for (i = 0;i < user_count;++i)
     {
-        testDeploy2bOneUser(sign_count, sch,
-            bitlen_sec,
-            bitlen_msg,
-            &sign_total, &sign_online_total,
-            &vrfy_total, &vrfy_online_total);
+        keypair[i] = KeyPair_new(sch, bitlen_sec);
+        assert(keypair[i] != NULL);
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    SignSessionD2b ***signsess = calloc(user_count, sizeof(SignSessionD2b**));
+    for (i = 0;i < user_count;++i)
+    {
+        signsess[i] = calloc(sign_count, sizeof(SignSessionD2b*));
+        assert(signsess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            signsess[i][j] = SignSessionD2b_new(keypair[i], sch);
+            assert(signsess[i][j] != NULL);
+        }
+    }
+    VrfySessionD2b ***vrfysess = calloc(user_count, sizeof(VrfySessionD2b**));
+    for (i = 0;i < user_count;++i)
+    {
+        vrfysess[i] = calloc(sign_count, sizeof(VrfySessionD2b*));
+        assert(vrfysess[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            vrfysess[i][j] = VrfySessionD2b_new(keypair[i], sch);
+            assert(vrfysess[i][j] != NULL);
+        }
+    }
+    Signature ***sig = calloc(user_count, sizeof(Signature**));
+    for (i = 0;i < user_count;++i)
+    {
+        sig[i] = calloc(sign_count, sizeof(Signature*));
+        assert(sig[i] != NULL);
+        for (j = 0;j < sign_count;++j)
+        {
+            sig[i][j] = Signature_new(keypair[i], sch);
+            assert(sig[i][j] != NULL);
+        }
     }
 
-    *ret_sign_tot = sign_total;
-    *ret_sign_onl = sign_online_total;
-    *ret_vrfy_tot = vrfy_total;
-    *ret_vrfy_onl = vrfy_online_total;
+    int msglen = bitlen_msg / 8;
+    unsigned char *msg = malloc(msglen);
+    assert(msg != NULL);
 
+    /* Gen all keys */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        ret = KeyPair_gen(keypair[i]);
+        assert(ret == 0);
+    }
+    timerstop();
+
+    /* Do all Signs-offline */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D2b_sign_offline(sch, keypair[i], signsess[i][j], sig[i][j]);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_sign_off = getms();
+
+    /* Do all Signs-online */
+    timerstart();
+    for (i = 0;i < user_count;++i)
+    {
+        for (j = 0;j < sign_count;++j)
+        {
+            ret = Scheme_D2b_sign_online(sch, keypair[i], signsess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_sign_on = getms();
+
+    /* Do all Verifys-offline */
+    timerstart();
+    for (i = 0; i < user_count; i++)
+    {
+        for (j = 0;j < sign_count;j++)
+        {
+            ret = Scheme_D2b_vrfy_offline(sch, keypair[i], vrfysess[i][j], sig[i][j]);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_vrfy_off = getms();
+
+    /* Do all Verifys-online */
+    timerstart();
+    for (i = 0; i < user_count; i++)
+    {
+        for (j = 0;j < sign_count;j++)
+        {
+            ret = Scheme_D2b_vrfy_online(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            assert(ret == 0);
+        }
+    }
+    timerstop();
+    measured_vrfy_on = getms();
+
+    if (ret_sign_tot != NULL) *ret_sign_tot = measured_sign_off + measured_sign_on;
+    if (ret_sign_onl != NULL) *ret_sign_onl = measured_sign_on;
+    if (ret_vrfy_tot != NULL) *ret_vrfy_tot = measured_vrfy_off + measured_vrfy_on;
+    if (ret_vrfy_onl != NULL) *ret_vrfy_onl = measured_vrfy_on;
+
+clean:
     free(sch);
+    //A lot of things to clean
     return 0;
 }
 
@@ -778,7 +1132,7 @@ int testDeploy1(int verbose, int schid, int bitlen_sec,
     if (sch == NULL) return -1;
 
     /* Warm up */
-    ret = testDeploy1OneUser(sign_count, sch,
+    ret = testD1OneUser(1, sch,
         bitlen_sec,
         bitlen_msg,
         NULL, NULL, NULL, NULL);
@@ -914,7 +1268,7 @@ int testDeploy0(int verbose, int schid, int bitlen_sec,
 	if (sch == NULL) return -1;
 
 	/* Warm up */
-	ret = testDeploy0OneUser(sign_count, sch,
+	ret = testD0OneUser(1, sch,
 		bitlen_sec,
 		bitlen_msg,
 		NULL, NULL);
