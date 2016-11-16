@@ -670,7 +670,7 @@ int testDeploy3(int verbose, int schid, int bitlen_sec,
     {
         for (j = 0;j < sign_count;j++)
         {
-            ret = Scheme_D3_vrfy_online(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            ret = Scheme_D3_vrfy_online(sch, keypair[i], vrfysess[i][j], sig[i][j]);
             assert(ret == 0);
         }
     }
@@ -809,7 +809,7 @@ int testDeploy3b(int verbose, int schid, int bitlen_sec,
     {
         for (j = 0;j < sign_count;j++)
         {
-            ret = Scheme_D3b_vrfy_online(sch, keypair[i], vrfysess[i][j], sig[i][j], msg, msglen);
+            ret = Scheme_D3b_vrfy_online(sch, keypair[i], vrfysess[i][j], sig[i][j]);
             assert(ret == 0);
         }
     }
