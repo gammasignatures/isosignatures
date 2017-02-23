@@ -198,6 +198,32 @@ int testDeploy0(int verbose, int schid, int bitlen_sec,
 	clock_t *ret_sign, clock_t *ret_vrfy, clock_t *ret_keygen);
 
 
+/**
+* Select a scheme, specify params, and run the scheme in Deployment 0.
+*
+* In Deployment 0, everything is done online. No pre-processing is permitted.
+*
+* \param verbose       Whether to enable verbose mode.
+* \param schid         Which scheme? Use SCHID_* here.
+* \param deploy        Which deploy? 0/10/20/21/30/31.
+* \param bitlen_sec    Security parameter. Use SEC_* here.
+* \param bitlen_msg    Message length.
+* \param user_count    How many signers.
+* \param sign_count    How many signatures to generate for one signer.
+*
+* \param ret_gen       KeyGen time will go here.
+* \param ret_sign      Signing time will go here.
+* \param ret_vrfy      Vrfying time will go here.
+*
+* \return  0(OK), or -1(failed).
+*/
+int testDeploy(int verbose, int schid, int deploy,
+        int bitlen_sec,
+	    int bitlen_msg,
+	    int user_count, int sign_count,
+	    clock_t *ret_gen, clock_t *ret_sign, clock_t *ret_vrfy);
+
+
 const char* getnamebyschid(int schid);
 
 #endif

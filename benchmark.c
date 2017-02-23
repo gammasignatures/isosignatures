@@ -1362,3 +1362,19 @@ clean:
     //A lot of things to clean
 	return 0;
 }
+
+
+int testDeploy(int verbose, int schid, int deploy,
+        int bitlen_sec,
+	    int bitlen_msg,
+	    int user_count, int sign_count,
+	    clock_t *ret_gen, clock_t *ret_sign, clock_t *ret_vrfy)
+{
+    //TODO
+    if (ret_gen!=NULL) *ret_gen = 888;
+    if (ret_sign!=NULL) *ret_sign = 888;
+    if (ret_vrfy!=NULL) *ret_vrfy = 888;
+    return 0;
+}
+
+
