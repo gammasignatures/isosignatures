@@ -1375,16 +1375,24 @@ int testDeploy(int verbose, int schid, int deploy,
 	{
 	case 0:
 		testDeploy0(verbose, schid, bitlen_sec, bitlen_msg, sign_count, user_count, ret_sign, ret_vrfy, ret_gen);
+		break;
 	case 10:
 		testDeploy1(verbose, schid, bitlen_sec, bitlen_msg, sign_count, user_count, NULL, ret_sign, NULL, ret_vrfy);
+		break;
 	case 20:
 		testDeploy2(verbose, schid, bitlen_sec, bitlen_msg, sign_count, user_count, NULL, ret_sign, NULL, ret_vrfy);
+		break;
 	case 21:
 		testDeploy2b(verbose, schid, bitlen_sec, bitlen_msg, sign_count, user_count, NULL, ret_sign, NULL, ret_vrfy);
+		break;
 	case 30:
 		testDeploy3(verbose, schid, bitlen_sec, bitlen_msg, sign_count, user_count, NULL, ret_sign, NULL, ret_vrfy);
+		break;
 	case 31:
 		testDeploy3b(verbose, schid, bitlen_sec, bitlen_msg, sign_count, user_count, NULL, ret_sign, NULL, ret_vrfy);
+		break;
+	default:
+		return -1;
 	}
     return 0;
 }
