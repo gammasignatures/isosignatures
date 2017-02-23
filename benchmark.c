@@ -1386,9 +1386,6 @@ int testDeploy(int verbose, int schid, int deploy,
 	case 31:
 		testDeploy3b(verbose, schid, bitlen_sec, bitlen_msg, sign_count, user_count, NULL, ret_sign, NULL, ret_vrfy);
 	}
-    if (ret_gen!=NULL) *ret_gen = 888;
-    if (ret_sign!=NULL) *ret_sign = 888;
-    if (ret_vrfy!=NULL) *ret_vrfy = 888;
     return 0;
 }
 
